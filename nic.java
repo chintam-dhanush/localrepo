@@ -1,4 +1,3 @@
-package localrepo;
 
 public class nic {
     public static void main(String[] args) {
