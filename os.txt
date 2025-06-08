@@ -246,6 +246,7 @@ MOV AH,4CH
 INT 21H
 CODE ENDS
 END START
+-------------------------------------------------------------------------
 
 ASSUME CS:CODE, DS:DATA
 org 100H
@@ -320,7 +321,7 @@ int main() {
         printf("Enter file name to be created: ");
         scanf("%s", name);
 
-        for (i = 0; i < j; i++) {
+        for (i = 0; i < j; i++) { 
             if (strcmp(name, fname[i]) == 0) {
                 printf("There is already a file named %s\n", name);
                 break;
@@ -774,3 +775,149 @@ int main() {
 
     return 0;
 }
+
+
+fact-------------------------------------------------------------
+
+ASSUME CS:CODE
+CODE SEGMENT
+START:
+    MOV CX, 5H      ; CX = 5
+    MOV AX, 1H      ; AX = 1
+
+NEXT:
+    MUL CX          ; AX = AX * CX
+    DEC CX          ; CX = CX - 1
+    CMP CX, 1H
+    JNZ NEXT        ; Loop until CX = 1
+
+    MOV BL, AL      ; Store lower byte of factorial in BL
+    MOV AH, 4CH     ; Exit function
+    MOV AL, 0H      ; Return code 0
+    INT 03H         ; Call DOS interrupt
+
+CODE ENDS
+END START
+
+fib--------------------------------------------------------------------
+
+ASSUME CS:CODE,DS:DATA
+DATA SEGMENT
+NL1 DB 10,'ENTER NUMBER:$'
+NL2 DB 10,'$'
+TEMP DB ?
+DATA ENDS
+CODE SEGMENT
+START:
+MOV AX,DATA
+MOV DS,AX
+LEA DX,NL1
+MOV AH,09H
+INT 21H
+MOV AH,01H
+INT 21H
+SUB AL,30H
+MOV CL,AL
+MOV AL,0
+MOV BL,1
+LBL1:
+MOV TEMP,AL
+LEA DX,NL2
+MOV AH,09H
+INT 21H
+ADD AX,3030H
+MOV DX,AX
+MOV AH,02H
+INT 21H
+MOV AL,TEMP
+ADD AL,BL
+MOV BL,TEMP
+LOOP LBL1
+MOV AH,4CH
+INT 21H
+CODE ENDS
+END START
+
+num-----------------------------------------------------------------------------
+
+ASSUME CS:CODE, DS:DATA
+
+DATA SEGMENT
+    VAL1    DB  ?                                 ; Final sum of inputs
+    NL1     DB  0AH,0DH,'ENTER HOW MANY NO U WANT:','$' ; First prompt
+    NL2     DB  0AH,0DH,'ENTER NO:','$'           ; Repeated prompt for numbers
+DATA ENDS
+
+CODE SEGMENT
+start:
+    MOV AX, DATA           ; Load data segment address
+    MOV DS, AX             ; Set DS to point to DATA
+
+    LEA DX, NL1            ; Load prompt string
+    MOV AH, 09H            ; DOS print string function
+    INT 21H                ; Print "ENTER HOW MANY NO U WANT:"
+
+    MOV AH, 01H            ; DOS read character
+    INT 21H
+    SUB AL, 30H            ; Convert ASCII to number
+
+    MOV CL, AL             ; Number of inputs to read
+    MOV BL, AL             ; Save count (not used further)
+    MOV AL, 00
+    MOV VAL1, AL           ; Initialize sum to 0
+
+LBL1:
+    LEA DX, NL2            ; Load "ENTER NO:" prompt
+    MOV AH, 09H
+    INT 21H                ; Print prompt
+
+    MOV AH, 01H            ; Read number
+    INT 21H
+    SUB AL, 30H            ; Convert to number
+
+    ADD AL, VAL1           ; Add input to current sum
+    MOV VAL1, AL           ; Store updated sum
+
+    LOOP LBL1              ; Repeat until CL = 0
+
+    MOV AX, 00             ; Clear AX
+    MOV BL, VAL1           ; Move sum to BL
+    MOV AH, 4CH            ; Exit to DOS
+    INT 03H                ; Correct exit call
+
+
+CODE ENDS
+END start
+
+block loc----------------------------------------------------------------------------
+
+ORG 100H
+ASSUME CS:CODE
+CODE SEGMENT
+    START:
+MOV CX, 08H
+MOV BX, 10H
+MOV DX, 21H
+
+MOV SI,BX
+MOV DI,DX
+
+MOV AL,CL
+STORE:
+MOV BYTE PTR[SI],AL
+DEC AL
+CMP AL,0H
+JNE STORE
+
+AGAIN: 
+MOV AL, BYTE PTR[SI]
+MOV BYTE PTR[DI], AL
+LOOP AGAIN
+
+MOV AH,4CH
+INT 21H
+
+CODE ENDS
+END START
+
+--------------------------------------------------------------------------------------
