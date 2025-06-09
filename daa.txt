@@ -1,0 +1,603 @@
+matrix chain multiplication---------------------------------------------------------------------------
+package week_6;
+//to run this program navigate to 
+// PS D:\2-2_daa_programming> javac  week_6/MatrixChainMultiplication.java
+// PS D:\2-2_daa_programming> java -cp . week_6.MatrixChainMultiplication
+
+import java.util.Scanner;
+
+public class MatrixChainMultiplication {
+    static final int INFY = 999999999; // Increase INFY to avoid incorrect min calculations
+    static long[][] m = new long[20][20];
+    static int[][] s = new int[20][20];
+    static int[] p = new int[21]; // Increase size to store n+1 values
+    static int n;
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        int i, j, k;
+
+        System.out.print("Enter the number of matrices: ");
+        n = scanner.nextInt();
+
+        // Initialize m[][] and s[][] correctly
+        for (i = 1; i <= n; i++)
+            m[i][i] = 0;
+
+        System.out.println("\nEnter the dimensions:");
+        for (k = 0; k <= n; k++) {  // Loop should run from 0 to n
+            System.out.printf("P%d: ", k);
+            p[k] = scanner.nextInt();
+        }
+
+        matMultiply();
+
+        System.out.println("\nCost Matrix M:");
+        for (i = 1; i <= n; i++) {
+            for (j = i; j <= n; j++)
+                System.out.printf("m[%d][%d]: %d\n", i, j, m[i][j]);
+        }
+
+        System.out.println("\nMatrix S for k values:");
+        for (i = 1; i <= n; i++) {
+            for (j = i; j <= n; j++)
+                System.out.printf("s[%d][%d]: %d\n", i, j, s[i][j]);
+        }
+
+        System.out.print("\nMULTIPLICATION SEQUENCE: ");
+        printOptimal(1, n);
+    }
+
+    static void printOptimal(int i, int j) {
+        if (i == j)
+            System.out.printf("A%d", i);
+        else {
+            System.out.print("(");
+            printOptimal(i, s[i][j]);
+            printOptimal(s[i][j] + 1, j);
+            System.out.print(")");
+        }
+    }
+
+    static void matMultiply() {
+        int i, j, k, L;
+        long q;
+
+        // Fill the table using bottom-up DP
+        for (L = 2; L <= n; L++) {  // L is chain length
+            for (i = 1; i <= n - L + 1; i++) {
+                j = i + L - 1;
+                m[i][j] = INFY;
+
+                for (k = i; k < j; k++) {
+                    q = m[i][k] + m[k + 1][j] + (long) p[i - 1] * p[k] * p[j];
+                    if (q < m[i][j]) {
+                        m[i][j] = q;
+                        s[i][j] = k;
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+knapsack----------------------------------------------------------------------
+package week_7;
+ //to execute:
+//  PS D:\2-2_daa_programming> javac  week_7/Knapsack.java
+// PS D:\2-2_daa_programming> java -cp . week_7/Knapsack
+import java.util.Scanner;
+		 
+public class Knapsack
+{
+    static int max(int a, int b) 
+    { 
+        return (a > b)? a : b; 
+    }
+    static int knapSack(int W, int wt[], int val[], int n)
+    {
+        int i, w;
+        int [][]K = new int[n+1][W+1];
+    
+        // Build table K[][] in bottom up manner
+        for (i = 0; i <= n; i++)
+        {
+            for (w = 0; w <= W; w++)
+            {
+                if (i==0 || w==0)
+                    K[i][w] = 0;
+                else if (wt[i-1] <= w)
+                    K[i][w] = max(val[i-1] + K[i-1][w-wt[i-1]],  K[i-1][w]);
+                else
+                    K[i][w] = K[i-1][w];
+            }
+        }
+    
+        return K[n][W];
+    }
+    
+public static void main(String args[])
+    {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter the number of items: ");
+        int n = sc.nextInt();
+        System.out.println("Enter the items weights: ");
+        int []wt = new int[n];
+        for(int i=0; i<n; i++)
+            wt[i] = sc.nextInt();
+    
+        System.out.println("Enter the items values: ");
+        int []val = new int[n];
+        for(int i=0; i<n; i++)
+            val[i] = sc.nextInt();
+    
+        System.out.println("Enter the maximum capacity: ");
+                int W = sc.nextInt();	 
+        
+                    System.out.println("The maximum value that can be put in a knapsack of capacity W  is: " + 
+                    knapSack(W, wt, val, n));
+    sc.close();
+    }
+}
+
+optimal binary search tree normal---------------------------------------------------
+package week_8;
+//to implement this do
+//PS D:\2-2_daa_programming> javac  .\week_8\obst.java
+//PS D:\2-2_daa_programming> java -cp .  week_8.obst
+import java.util.Scanner;
+
+public class obst {
+
+    public static int optimalSearchTree(int[] keys, int[] freq, int n) {
+        int[][] cost = new int[n][n];
+
+        for (int i = 0; i < n; i++)
+            cost[i][i] = freq[i];
+
+        for (int L = 2; L <= n; L++) {
+            for (int i = 0; i <= n - L; i++) {
+                int j = i + L - 1;
+                cost[i][j] = Integer.MAX_VALUE;
+
+                int sum = 0;
+                for (int k = i; k <= j; k++)
+                    sum += freq[k];
+
+                for (int r = i; r <= j; r++) {
+                    int c = 0;
+                    if (r > i)
+                        c += cost[i][r - 1];
+                    if (r < j)
+                        c += cost[r + 1][j];
+                    c += sum;
+
+                    if (c < cost[i][j])
+                        cost[i][j] = c;
+                }
+            }
+        }
+
+        return cost[0][n - 1];
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter number of keys: ");
+        int n = sc.nextInt();
+
+        int[] keys = new int[n];
+        int[] freq = new int[n];
+
+        System.out.println("Enter keys in sorted order:");
+        for (int i = 0; i < n; i++) {
+            keys[i] = sc.nextInt();
+        }
+
+        System.out.println("Enter frequency for each key:");
+        for (int i = 0; i < n; i++) {
+            freq[i] = sc.nextInt();
+        }
+
+        int minCost = optimalSearchTree(keys, freq, n);
+        System.out.println("Minimum cost of OBST is: " + minCost);
+
+        sc.close();
+    }
+}
+  optimal binary search tree dynamic programming-----------------------------------------
+  package week_8;
+//to implement this do
+//PS D:\2-2_daa_programming> javac  .\week_8\OPtimal_BST_DP.java
+// PS D:\2-2_daa_programming> java -cp .  week_8.OPtimal_BST_DP 
+public class OPtimal_BST_DP {
+
+    // Function to calculate the cost of the Optimal BST using dynamic programming
+    static int optimalSearchTree(int keys[], int freq[], int n) {
+        // Create a 2D table to store the results of subproblems
+        int[][] cost = new int[n][n];
+
+        // For a single key, the cost is equal to its frequency
+        for (int i = 0; i < n; i++) {
+            cost[i][i] = freq[i];
+        }
+
+        // L is the chain length (number of keys in the subtree)
+        for (int L = 2; L <= n; L++) {
+            for (int i = 0; i <= n - L; i++) {
+                int j = i + L - 1; // Ending index of the chain
+                cost[i][j] = Integer.MAX_VALUE;
+
+                // Calculate the sum of frequencies for keys[i..j]
+                int freqSum = sum(freq, i, j);
+
+                // Try making each key in keys[i..j] the root
+                for (int r = i; r <= j; r++) {
+                    // Cost when keys[r] is the root
+                    int leftCost = (r > i) ? cost[i][r - 1] : 0;
+                    int rightCost = (r < j) ? cost[r + 1][j] : 0;
+                    int totalCost = leftCost + rightCost + freqSum;
+
+                    // Update the minimum cost
+                    if (totalCost < cost[i][j]) {
+                        cost[i][j] = totalCost;
+                    }
+                }
+            }
+        }
+
+        // The final result is stored in cost[0][n-1]
+        return cost[0][n - 1];
+    }
+
+    // Utility function to calculate the sum of frequencies from index i to j
+    static int sum(int freq[], int i, int j) {
+        int s = 0;
+        for (int k = i; k <= j; k++) {
+            s += freq[k];
+        }
+        return s;
+    }
+
+    public static void main(String[] args) {
+        int keys[] = {10, 12, 20};
+        int freq[] = {34, 8, 50};
+        int n = keys.length;
+
+        System.out.println("Cost of Optimal BST is " + optimalSearchTree(keys, freq, n));
+    }
+}
+
+sum of subsets----------------------------------------------------------------
+package week_9;
+//to implement this do
+//PS D:\2-2_daa_programming> javac  .\week_9\SumOfSubsets.java
+////PS D:\2-2_daa_programming> java -cp .  week_9.SumOfSubsets
+import java.util.Scanner;
+import java.util.Arrays;
+
+public class SumOfSubsets {
+
+    static int[] w;
+    static int[] x;
+    static int m;
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        // Input number of elements
+        System.out.print("Enter number of elements: ");
+        int n = sc.nextInt();
+
+        // Input array elements
+        w = new int[n];
+        System.out.println("Enter " + n + " positive integers in any order:");
+        for (int i = 0; i < n; i++) {
+            w[i] = sc.nextInt();
+        }
+
+        // Sort weights
+        Arrays.sort(w);
+
+        // Input target sum
+        System.out.print("Enter the target sum: ");
+        m = sc.nextInt();
+
+        // Initialize x[]
+        x = new int[n];
+
+        // Calculate total sum of weights
+        int total = 0;
+        for (int num : w) {
+            total += num;
+        }
+
+        if (w[0] <= m && total >= m) {
+            System.out.println("Subsets that sum to " + m + ":");
+            SumOfSub(0, 0, total);
+        } else {
+            System.out.println("No solution possible");
+        }
+
+        sc.close();
+    }
+
+    static void SumOfSub(int s, int k, int r) {
+        x[k] = 1; // include w[k]
+
+        if (s + w[k] == m) {
+            // subset found, print it
+            for (int i = 0; i <= k; i++) {
+                if (x[i] == 1) {
+                    System.out.print(w[i] + " ");
+                }
+            }
+            System.out.println();
+        } else if (k + 1 < w.length && s + w[k] + w[k + 1] <= m) {
+            // generate left child
+            SumOfSub(s + w[k], k + 1, r - w[k]);
+        }
+
+        // generate right child
+        if (k + 1 < w.length && (s + r - w[k] >= m) && (s + w[k + 1] <= m)) {
+            x[k] = 0;
+            SumOfSub(s, k + 1, r - w[k]);
+        }
+    }
+}
+
+subset sum---------------------------------------------------------
+package week_9;
+//to implement this do
+//PS D:\2-2_daa_programming> javac  .\week_9\SubsetSum.java
+//PS D:\2-2_daa_programming> java -cp .  week_9.SubsetSum
+import java.util.ArrayList;
+import java.util.List;
+
+public class SubsetSum {
+
+    static void findAllSubsets(int[] set, int targetSum, int index, List<Integer> currentSubset, List<List<Integer>> result) {
+        // Base case: if the target sum is 0, add a copy of the current subset to the result
+        if (targetSum == 0) {
+            result.add(new ArrayList<>(currentSubset));
+            return;
+        }
+
+        // If target becomes negative or all elements are considered
+        if (index >= set.length || targetSum < 0) {
+            return;
+        }
+
+        // Include the current element
+        currentSubset.add(set[index]);
+        findAllSubsets(set, targetSum - set[index], index + 1, currentSubset, result);
+
+        // Backtrack and exclude the current element
+        currentSubset.remove(currentSubset.size() - 1);
+        findAllSubsets(set, targetSum, index + 1, currentSubset, result);
+    }
+
+    public static void findSubsets(int[] set, int targetSum) {
+        List<List<Integer>> result = new ArrayList<>();
+        findAllSubsets(set, targetSum, 0, new ArrayList<>(), result);
+
+        if (result.isEmpty()) {
+            System.out.println("No subsets found with sum equal to " + targetSum);
+        } else {
+            System.out.println("Subsets with sum " + targetSum + ":");
+            for (List<Integer> subset : result) {
+                System.out.println(subset);
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        int[] set = {1, 2, 3, 5, 6, 8, 12};
+        int targetSum = 9;
+        findSubsets(set, targetSum);
+    }
+}
+
+N-Queens-------------------------------------------------------------------
+package week_10;
+import java.util.*;
+//this can be implemented using backtracking
+//to implement this do
+//PS D:\2-2_daa_programming> javac  .\week_10\NQueens.java
+//PS D:\2-2_daa_programming> java -cp .  week_10.NQueens
+class NQueens {
+    static int[][] board;
+    static int N;
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter value of N");
+        N = sc.nextInt();
+        board = new int[N][N];
+        if (solve(0)) {
+            printboard();
+        } else {
+            System.out.println("No solution");
+        }
+        sc.close();
+    }
+
+    public static boolean solve(int row) {
+        if (row == N) {
+            return true;
+        }
+        for (int col = 0; col < N; col++) {
+            if (issafe(row, col)) {
+                board[row][col] = 1;
+                if (solve(row + 1)) {
+                    return true;
+                }
+                board[row][col] = 0;
+            }
+        }
+        return false;
+    }
+
+    public static boolean issafe(int row, int col) {
+        for (int i = 0; i < row; i++) {
+            if (board[i][col] == 1) {
+                return false;
+            }
+        }
+        for (int i = row - 1, j = col - 1; i >= 0 && j >= 0; i--, j--) {
+            if (board[i][j] == 1) {
+                return false;
+            }
+        }
+        for (int i = row - 1, j = col + 1; i >= 0 && j < N; i--, j++) {
+            if (board[i][j] == 1) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static void printboard() {
+        System.out.println("The board is: ");
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                System.out.print(board[i][j] + " ");
+            }
+            System.out.println();
+        }
+        System.out.println("The board in reverse order is: ");
+        for(int i=0;i<N;i++){
+            for(int j=N-1;j>=0;j--){
+                System.out.print(board[i][j]+" ");
+            }
+            System.out.println();
+        }
+    }
+}
+
+hamiltonian cycle--------------------------------------------------------------
+package week_11;
+//this can be implemented using backtracking
+//to implement this do
+//PS D:\2-2_daa_programming> javac .\week_11\HamiltonianCycle.java
+//PS D:\2-2_daa_programming> java -cp . week_11.HamiltonianCycle  
+import java.util.Scanner;
+
+public class HamiltonianCycle{
+
+    static int V;
+    static int[] path;
+    static int[][] graph;
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter number of vertices: ");
+        V = sc.nextInt();
+
+        graph = new int[V][V];
+        path = new int[V];
+
+        System.out.println("Enter adjacency matrix:");
+        for (int i = 0; i < V; i++)
+            for (int j = 0; j < V; j++)
+                graph[i][j] = sc.nextInt();
+
+        for (int i = 0; i < V; i++)
+            path[i] = -1;
+        path[0] = 0;
+
+        if (solve(1))
+            printPath();
+        else
+            System.out.println("No Hamiltonian Cycle exists");
+
+        sc.close();
+    }
+
+    static boolean solve(int pos) {
+        if (pos == V) {
+            return graph[path[pos - 1]][path[0]] == 1;
+        }
+
+        for (int v = 1; v < V; v++) {
+            if (isSafe(v, pos)) {
+                path[pos] = v;
+                if (solve(pos + 1))
+                    return true;
+                path[pos] = -1; // backtrack
+            }
+        }
+
+        return false;
+    }
+
+    static boolean isSafe(int v, int pos) {
+        if (graph[path[pos - 1]][v] == 0)
+            return false;
+
+        for (int i = 0; i < pos; i++)
+            if (path[i] == v)
+                return false;
+
+        return true;
+    }
+
+    static void printPath() {
+        System.out.println("Hamiltonian Cycle:");
+        for (int i = 0; i < V; i++)
+            System.out.print(path[i] + " ");
+        System.out.println(path[0]); // to complete the cycle
+    }
+}
+
+travelling sales person problem------------------------------------------------------------
+package week_12;
+// //this can be implemented using backtracking
+// //to implement this do
+// //PS D:\2-2_daa_programming> javac .\week_12\tspbb.java
+// //PS D:\2-2_daa_programming> java -cp . week_12.tspbb
+import java.util.Scanner;
+
+public class tspbb {
+    static int[][] cost;
+    static boolean[] visited;
+    static int n, minCost = 9999;
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Enter number of cities: ");
+        n = sc.nextInt();
+
+        cost = new int[n][n];
+        visited = new boolean[n];
+
+        System.out.println("Enter cost matrix:");
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < n; j++)
+                cost[i][j] = sc.nextInt();
+
+        visited[0] = true; // start from city 0
+        tsp(0, 1, 0);
+        System.out.println("Minimum cost: " + minCost);
+    }
+
+    static void tsp(int curr, int count, int total) {
+        if (count == n && cost[curr][0] > 0) {
+            total += cost[curr][0];
+            if (total < minCost)
+                minCost = total;
+            return;
+        }
+
+        for (int i = 0; i < n; i++) {
+            if (!visited[i] && cost[curr][i] > 0) {
+                visited[i] = true;
+                tsp(i, count + 1, total + cost[curr][i]);
+                visited[i] = false;
+            }
+        }
+    }
+}
