@@ -601,3 +601,375 @@ public class tspbb {
         }
     }
 }
+matMultiply-----------------------------------------------------------------------------------------
+import java.util.*;
+
+public class MatrixChain {
+
+    static int[][] s = new int[20][20];
+
+    static void matrix(int p[],int n)
+    {
+        int m[][] = new int[n][n];
+        for(int i=1;i<n;i++)
+           m[i][i] = 0;
+        for(int l=2;l<n;l++)
+        {
+            for(int i=1;i<n-l+1;i++)
+            {
+                int j = i+l-1;
+                m[i][j] = Integer.MAX_VALUE;
+                for(int k=i;k<j;k++)
+                {
+                    int q = m[i][k] + m[k+1][j] + p[i-1]*p[k]*p[j];
+                    if(q<m[i][j])
+                    {
+                        m[i][j] = q;
+                        s[i][j] = k;
+                    }
+                }
+            }
+        }
+        System.out.println("Min multiplications:"+m[1][n-1]);
+    }
+
+      static void printOptimal(int i, int j) {
+        if (i == j)
+            System.out.printf("A%d", i);
+        else {
+            System.out.print("(");
+            printOptimal(i, s[i][j]);
+            printOptimal(s[i][j] + 1, j);
+            System.out.print(")");
+        }
+    }
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter no of matrices");
+        int n = sc.nextInt();
+        int p[] = new int[n+1];
+        System.out.println("Enter dimensions");
+        for(int i=0;i<n+1;i++)
+           p[i] = sc.nextInt();
+        matrix(p,n+1);
+
+        System.out.print("\nMULTIPLICATION SEQUENCE: ");
+        printOptimal(1, n);
+        sc.close();
+    }
+}
+knapSack---------------------------------------------------------------------------------------------------------------------
+import java.lang.Math;
+import java.util.Scanner;
+import java.util.ArrayList;
+
+public class Knapsack {
+    static int knapSack(int W, int wt[], int val[], int n) {
+        int i, w;
+        int [][]K = new int[n+1][W+1];
+
+        // Build table K[][] in bottom up manner
+        for (i = 0; i <= n; i++) {
+            for (w = 0; w <= W; w++) {
+                if (i==0 || w==0)
+                    K[i][w] = 0;
+                else if (wt[i-1] <= w)
+                    K[i][w] = Math.max(val[i-1] + K[i-1][w-wt[i-1]],  K[i-1][w]);
+                else
+                    K[i][w] = K[i-1][w];
+            }
+        }
+
+        // Trace selected items
+        w = W;
+        ArrayList<Integer> selectedItems = new ArrayList<>();
+        for (i = n; i > 0 && w > 0; i--) {
+            if (K[i][w] != K[i-1][w]) {
+                selectedItems.add(i-1);  // Item index
+                w = w - wt[i-1];
+            }
+        }
+
+        System.out.println("Selected item indices (0-based): " + selectedItems);
+        System.out.println("Selected item weights and values:");
+        for (int idx : selectedItems) {
+            System.out.println("Weight: " + wt[idx] + ", Value: " + val[idx]);
+        }
+
+        return K[n][W];
+    }
+
+    public static void main(String args[]) {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter the number of items: ");
+        int n = sc.nextInt();
+
+        System.out.println("Enter the items weights: ");
+        int []wt = new int[n];
+        for(int i = 0; i < n; i++)
+            wt[i] = sc.nextInt();
+
+        System.out.println("Enter the items values: ");
+        int []val = new int[n];
+        for(int i = 0; i < n; i++)
+            val[i] = sc.nextInt();
+
+        System.out.println("Enter the maximum capacity: ");
+        int W = sc.nextInt();
+
+        int maxVal = knapSack(W, wt, val, n);
+        System.out.println("The maximum value that can be put in a knapsack of capacity " + W + " is: " + maxVal);
+        sc.close();
+    }
+}
+optimalSearchTree----------------------------------------------------------------------------------------------------------------------
+import java.util.*;
+
+public class OBSTa {
+    static int n;
+    static int p[],q[],c[][],r[][],w[][];
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter no of nodes");
+        n = sc.nextInt();
+        p = new int[n+1];
+        q = new int[n+1];
+        System.out.println("Enter successful probabilities");
+        for(int i=1;i<=n;i++)
+           p[i] = sc.nextInt();
+        System.out.println("Enter unsuccessful probabilities");
+        for(int i=0;i<=n;i++)
+           q[i] = sc.nextInt();
+        c = new int[n+2][n+2];
+        r = new int[n+2][n+2];
+        w = new int[n+2][n+2];
+
+        optimal();
+
+        System.out.println("Minimum cost:"+c[0][n]);
+        sc.close();
+    }
+
+    static void optimal()
+    {
+        for(int i=0;i<n;i++)
+        {
+            w[i][i] = q[i];
+            c[i][i] = 0;
+            r[i][i] = 0;
+
+            w[i][i+1] = q[i] + q[i+1] + p[i+1];
+            r[i][i+1] = i + 1;
+            c[i][i+1] = q[i] + q[i+1] + p[i+1];
+        }
+        w[n][n] = q[n];
+        r[n][n] = 0;
+        c[n][n] = 0;
+        for(int m=2;m<=n;m++)
+        {
+            for(int i=0;i<=n-m;i++)
+            {
+                int j = i + m;
+                w[i][j] = w[i][j-1] + p[j] + q[j];
+                int k = find(i,j);
+                c[i][j] = w[i][j] + c[i][k-1] + c[k][j];
+                r[i][j] = k;
+            }
+        }
+    }
+
+    static int find(int i,int j)
+    {
+        int min = Integer.MAX_VALUE;
+        int l = 0;
+        for(int m = r[i][j-1];m<=r[i+1][j];m++)
+        {
+            if(c[i][m-1]+c[m][j]<min)
+            {
+                min = c[i][m-1] + c[m][j];
+                l = m;
+            }
+        }
+        return l;
+    }
+}
+sumofsubsets---------------------------------------------------------------------------------------------------------
+import java.util.*;
+
+public class sumofsubsetsa {
+
+    static void subsets(int s, int r, int k, int w[], int m, int x[]) {
+        if (k >= w.length) return; // base case to avoid out of bounds
+
+        x[k] = 1;
+        if (s + w[k] == m) {
+            // print subset using x[]
+            for (int i = 0; i <= k; i++) {
+                if (x[i] == 1)
+                    System.out.print(w[i] + " ");
+            }
+            System.out.println();
+        } else if (s + w[k] + (k + 1 < w.length ? w[k + 1] : 0) <= m) {
+            subsets(s + w[k], r - w[k], k + 1, w, m, x);
+        }
+
+        if ((s + r - w[k]) >= m && (k + 1 < w.length && s + w[k + 1] <= m)) {
+            x[k] = 0;
+            subsets(s, r - w[k], k + 1, w, m, x);
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter no of elements");
+        int n = sc.nextInt();
+
+        System.out.println("Enter target sum");
+        int m = sc.nextInt();
+
+        int w[] = new int[n];
+        int r = 0;
+        System.out.println("Enter weight array elements");
+        for (int i = 0; i < n; i++) {
+            w[i] = sc.nextInt();
+            r += w[i];
+        }
+
+        Arrays.sort(w); // Required for bounding conditions to work correctly
+        int x[] = new int[n];
+
+        System.out.println("Subsets whose sum is " + m + ":");
+        subsets(0, r, 0, w, m, x);
+        sc.close();
+    }
+}
+nquuens-----------------------------------------------------------------------------------------------------------------
+import java.util.*;
+
+public class NQueensa
+{
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter no of queens");
+        int n = sc.nextInt();
+        int x[] = new int[n];
+        int k = 0;
+        nq(k,n,x);
+        sc.close();
+    }
+
+    static void nq(int k,int n,int x[])
+    {
+        for(int i=0;i<n;i++)
+        {
+            if(Place(k,i,n,x))
+            {
+                x[k] = i;
+                if(k==n-1)
+                {
+                    for(int j=0;j<n;j++)
+                    {
+                        System.out.print(x[j]+" ");
+                    }
+                    System.out.println();
+                }
+                else
+                {
+                    nq(k+1,n,x);
+                }
+            }
+        }
+    }
+
+    static boolean Place(int k,int i,int n,int x[])
+    {
+        for(int j=0;j<k;j++)
+        {
+            if(x[j]==i || (Math.abs(x[j]-i)==Math.abs(j-k)))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+ham---------------------------------------------------------------------------------------------------------------------------
+
+import java.util.*;
+
+public class HamiltonianPathBookStyle {
+    static int[][] G;
+    static int[] x;
+    static int n;
+    static boolean found = false;
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        n = sc.nextInt(); // Number of vertices
+        int m = sc.nextInt(); // Number of edges
+
+        G = new int[n][n]; // 0-based indexing
+        x = new int[n];
+
+        for (int i = 0; i < m; i++) {
+            int u = sc.nextInt();
+            int v = sc.nextInt();
+            G[u][v] = 1;
+            G[v][u] = 1;
+        }
+
+        for (int start = 0; start < n; start++) {
+            Arrays.fill(x, -1); // -1 means unvisited
+            found = false;
+            x[0] = start;
+            hamiltonian(1);
+            if (found) {
+                System.out.println("YES");
+                System.out.print("Path: ");
+                for (int i = 0; i < n; i++) {
+                    System.out.print(x[i] + " ");
+                }
+                System.out.println();
+                sc.close();
+                return;
+            }
+        }
+
+        System.out.println("NO");
+        sc.close();
+    }
+
+    static void hamiltonian(int k) {
+        do {
+            nextValue(k);
+            if (x[k] == -1)
+                return;
+            if (k == n - 1) {
+                found = true;
+                return;
+            } else {
+                hamiltonian(k + 1);
+            }
+        } while (!found);
+    }
+
+    static void nextValue(int k) {
+        for (int v = 0; v < n; v++) {
+            if (G[x[k - 1]][v] == 1 && !isUsed(v, k)) {
+                x[k] = v;
+                return;
+            }
+        }
+        x[k] = -1; // No valid value found
+    }
+
+    static boolean isUsed(int v, int k) {
+        for (int i = 0; i < k; i++) {
+            if (x[i] == v)
+                return true;
+        }
+        return false;
+    }
+}
+
+--------------------------------------------------------------------------------------
