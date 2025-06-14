@@ -1,0 +1,2064 @@
+number to word--------------------------------------------------------------
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number to word converter</title>
+    <style>
+        body {
+            margin: 50px;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            text-align: center;
+        }
+        input, button {
+            margin: 10px;
+            padding: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Number To Word Converter</h2>
+        <label for="numinput">Enter a Number (0-999)</label><br>
+        <input type="text" id="numinput" placeholder="Enter Number"><br>
+        <button onclick="convertToWords()">Convert</button><br>
+        <label for="result">Result</label>
+        <input type="text" id="result" readonly>
+    </div>
+    <script>
+        const ones = ["", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
+        const teens = ["ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"];
+        const tens = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
+
+        function numberToWords(num) {
+            if (num === 0) return "zero";
+            let words = "";
+
+            if (Math.floor(num / 100) > 0) {
+                words += ones[Math.floor(num / 100)] + " hundred ";
+            }
+            num %= 100;
+
+            if (num >= 10 && num < 20) {
+                words += teens[num - 10];
+            } else {
+                if (Math.floor(num / 10) > 0) {
+                    words += tens[Math.floor(num / 10)] + " ";
+                }
+                words += ones[num % 10];
+            }
+
+            return words.trim();
+        }
+
+        function convertToWords() {
+            const input = document.getElementById("numinput").value.trim();
+            const resultField = document.getElementById("result");
+
+            if (isNaN(input)) {
+                resultField.value = "Not a number";
+                return;
+            }
+
+            const number = parseInt(input);
+            if (number < 0 || number > 999) {
+                resultField.value = "Out of Range";
+                return;
+            }
+
+            resultField.value = numberToWords(number);
+        }
+    </script>
+</body>
+</html>
+
+text analyzer---------------------------------------------------------------------------
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Statistics</title>
+    <script>
+        function analyzeText(){
+            let text = document.getElementById("textInput").value;
+            let charCount = text.length;
+            let wordCount = text.trim()=== ""? 0: text.trim().split(/\s+/).length;
+            let lineCount = text.split("\n").length;
+            alert("Characters: "+charCount+ "\nWords: "+wordCount+"\nLines: "+lineCount);
+        }
+    </script>
+</head>
+<body>
+    <h2>Text Statistics Counter</h2><br>
+    <textarea  id="textInput" cols="50" rows="10" placeholder="Enter Text Here"></textarea><br>
+    <button onclick="analyzeText()">Submit</button>
+</body>
+</html>
+states and capitals------------------------------------------------------------------------
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>23R11A05H9</title>
+    <style>
+        #capital{
+            color:blue;
+            font-weight: bold;
+            font-size: 18px;
+        }
+    </style>
+    <script>
+        function showCapital(){
+            let country = document.getElementById("countrySelect").value;
+            let capitals = {
+                "USA": "DC",
+                "UK": "London",
+                "France": "Paris",
+                "Germany": "Berlin",
+                "Japan": "Tokyo"
+            }
+            document.getElementById("capital").innerHTML = capitals[country];
+        }
+    </script>
+</head>
+<body>
+    <h2>Select a country</h2>
+    <select name="countrySelect" id="countrySelect" onchange="showCapital()">
+        <option value="Country">Country</option>
+        <option value="USA">USA</option>
+        <option value="UK">UK</option>
+        <option value="France">France</option>
+        <option value="Germany">Germany</option>
+        <option value="Japan">Japan</option>
+    </select>
+    <p>Capital: <span id="capital"></span></p>
+</body>
+</html>
+
+
+bookstore problem----------------------------------------------------------------------------------
+bookstore.dtd----
+<!ELEMENT bookstore (book+)>
+<!ELEMENT book (title, author, year, price)>
+<!ELEMENT title (#PCDATA)>
+<!ELEMENT author (#PCDATA)>
+<!ELEMENT year (#PCDATA)>
+<!ELEMENT price (#PCDATA)>
+
+bookstore.xml for dtd---
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE bookstore SYSTEM "bookstore.dtd">
+<bookstore>
+    <book>
+        <title>wt</title>
+        <author>dj</author>
+        <year>2009</year>
+        <price>138</price>
+    </book>
+    <book>
+        <title>wt1</title>
+        <author>djs</author>
+        <year>2019</year>
+        <price>1328</price>
+    </book>
+</bookstore>
+
+bookstore.xsd---
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <xsd:element name="bookstore">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="book" maxOccurs="unbounded">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="title" type="xsd:string"/>
+                            <xsd:element name="author" type="xsd:string"/>
+                            <xsd:element name="year" type="xsd:int"/>
+                            <xsd:element name="price" type="xsd:int"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>
+
+bookstore.xml for xsd---
+<?XMLSchema version="1.0" encoding="UTF-8"?>
+<bookstore xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:noNamespaceSchemaLocation="bookstore.xsd">
+    <book>
+        <title>wt</title>
+        <author>dj</author>
+        <year>2009</year>
+        <price>138</price>
+    </book>
+    <book>
+        <title>wt1</title>
+        <author>djs</author>
+        <year>2019</year>
+        <price>1328</price>
+    </book>
+</bookstore> 
+
+dom parser----------------------------------------------------------------
+package week_5;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import org.w3c.dom.*;
+import java.io.File;
+import java.util.*;
+public class DOMParser{
+    public static void main(String[] args) {
+        try{
+            File inputFile= new File("D:\\2-2_wt_programming\\week_5\\users.xml");
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document document = builder.parse(inputFile);
+            document.getDocumentElement().normalize();
+            Scanner sc = new Scanner(System.in);
+            System.out.println("enter user id");
+            String inputid = sc.nextLine();
+            NodeList nodelist = document.getElementsByTagName("user");
+            for(int i=0;i<nodelist.getLength();i++){
+                Node node=nodelist.item(i);
+                if(node.getNodeType()==Node.ELEMENT_NODE){
+                    Element userElement = (Element)node;
+                    String userId = userElement.getAttribute("id");
+                    if(userId.equals(inputid)){
+                        String name = userElement.getElementsByTagName("name").item(0).getTextContent();
+                        String email = userElement.getElementsByTagName("email").item(0).getTextContent();
+                        String age = userElement.getElementsByTagName("age").item(0).getTextContent();
+                        String city = userElement.getElementsByTagName("city").item(0).getTextContent();
+
+                        System.out.println("user found");
+                        System.out.println("Id:" + userId);
+                        System.out.println("Name" + name);
+                        System.out.println("Email" + email);
+                        System.out.println("Age" + age);
+                        System.out.println("City"+ city);
+                        return;
+                    }
+                }
+            }
+            System.out.println("User ID not found.");
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+}
+
+sax parser----------------------------------------------------------------------
+package week_5;
+
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+import java.io.File;
+import java.util.Scanner;
+
+class UserHandler extends DefaultHandler {
+    private String userId;
+    private boolean isName, isEmail, isAge, isCity;
+    private String foundName, foundEmail, foundAge, foundCity;
+    private boolean userFound = false;
+
+    public UserHandler(String userId) {
+        this.userId = userId;
+    }
+
+    @Override
+    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+        if (qName.equalsIgnoreCase("user")) {
+            String id = attributes.getValue("id");
+            if (id != null && id.equals(userId)) {
+                userFound = true;
+            }
+        }
+
+        if (userFound) {
+            if (qName.equalsIgnoreCase("name")) {
+                isName = true;
+            } else if (qName.equalsIgnoreCase("email")) {
+                isEmail = true;
+            } else if (qName.equalsIgnoreCase("age")) {
+                isAge = true;
+            } else if (qName.equalsIgnoreCase("city")) {
+                isCity = true;
+            }
+        }
+    }
+
+    @Override
+    public void characters(char[] ch, int start, int length) throws SAXException {
+        if (isName) {
+            foundName = new String(ch, start, length);
+            isName = false;
+        } else if (isEmail) {
+            foundEmail = new String(ch, start, length);
+            isEmail = false;
+        } else if (isAge) {
+            foundAge = new String(ch, start, length);
+            isAge = false;
+        } else if (isCity) {
+            foundCity = new String(ch, start, length);
+            isCity = false;
+        }
+    }
+
+    @Override
+    public void endElement(String uri, String localName, String qName) throws SAXException {
+        if (qName.equalsIgnoreCase("user") && userFound) {
+            System.out.println("User Found:");
+            System.out.println("ID: " + userId);
+            System.out.println("Name: " + foundName);
+            System.out.println("Email: " + foundEmail);
+            System.out.println("Age: " + foundAge);
+            System.out.println("City: " + foundCity);
+            userFound = false;
+        }
+
+        // After parsing, check if the user was found
+        if(qName.equalsIgnoreCase("users") && !userFound){
+            System.out.println("User Not Found");
+        }
+    }
+
+    public boolean isUserFound() {
+        return userFound;
+    }
+}
+
+public class SaxParserDemo {
+    public static void main(String[] args) {
+        try {
+            Scanner scanner = new Scanner(System.in);
+            System.out.print("Enter User ID: ");
+            String inputId = scanner.nextLine();
+
+            File inputFile = new File("D:\\2-2_wt_programming\\week_5\\users.xml");
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            SAXParser saxParser = factory.newSAXParser();
+            UserHandler handler = new UserHandler(inputId);
+            saxParser.parse(inputFile, handler);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+login details---------------------------------------------
+Login Ui Page:
+import java.io.IOException;
+import java.io.PrintWriter;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+public class LoginPageServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+    
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+        
+        out.println("<html>");
+        out.println("<head><title>Login Page</title></head>");
+        out.println("<body>");
+        out.println("<h2>Login</h2>");
+        out.println("<form action='login' method='post'>");
+        out.println("Username: <input type='text' name='username' ><br><br>");
+        out.println("Password: <input type='password' name='password'><br><br>");
+        out.println("<input type='submit' value='Login'>");
+        out.println("</form>");
+        out.println("</body>");
+        out.println("</html>");
+    }
+}
+
+
+Login Page:
+
+import java.io.*;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+public class LoginServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+    
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)  throws ServletException, IOException {
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+        
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+        
+        if (validateUser(username, password)) {
+            out.println("<h2>Login Successful</h2>");
+        } else {
+            out.println("<h2>Login Failed</h2>");
+        }
+    }
+    
+    private boolean validateUser(String username, String password) {
+        boolean isValid = false;
+        
+       if(username.equals("admin") && password.equals("admin123"))
+        isValid=true;
+    return isValid;
+    }
+}
+
+
+Web.xml
+
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" version="3.0">
+    <servlet>
+        <servlet-name>LoginServlet</servlet-name>
+        <servlet-class>LoginServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/login</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>LoginPageServlet</servlet-name>
+        <servlet-class>LoginPageServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LoginPageServlet</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+</web-app>
+
+
+Create class files :
+ 
+Start XAMPP Server:
+ 
+
+Output:
+
+
+week-6 a servlet for user validation using sql--------------------------------------------------------------------------------------
+Go to C:\xampp\tomcat\webapps\
+1) Create a project folder “DBLogin”
+2) Inside DBLogin, create another folder “WEB-INF”
+3) Inside WEB-INF create two folders “classes” and “lib”
+4) Download the mysql connector jar file and keep it in lib folder.
+5) Inside WEB-INF create a file called web.xml
+6) Inside classes folder create LoginServlet.java and HomeServlet.java
+7) Goto command prompt give command-
+a)	Javac -cp c:\xampp\tomcat\lib\servlet-api.jar Home.java LoginServlet.java
+8) Open Xampp server control panel
+9) Start tomcat
+10) Goto Browser and type- http://localhost:8080/DBLogin/
+11) You will find the login page
+
+Home.java
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+public class HomePage extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+    
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+        
+        out.println("<html>");
+        out.println("<head><title>Login Page</title></head>");
+        out.println("<body>");
+        out.println("<h2>Login</h2>");
+        out.println("<form action='login' method='post'>");
+        out.println("Username: <input type='text' name='username' ><br><br>");
+        out.println("Password: <input type='password' name='password'><br><br>");
+        out.println("<input type='submit' value='Login'>");
+        out.println("</form>");
+        out.println("</body>");
+        out.println("</html>");
+    }
+}
+
+LoginServlet.java
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+public class LoginServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+    
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+        
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+        
+        if (validateUser(username, password)) {
+            out.println("<h2>Login Successful!</h2>");
+        } else {
+            out.println("<h2>Login Failed! Invalid username or password.</h2>");
+        }
+    }
+
+    private boolean validateUser(String username, String password) {
+        boolean isValid = false;
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb", "root", "Santosh@2006");
+            String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, username);
+            pstmt.setString(2, password);
+            rs = pstmt.executeQuery();
+            
+            if (rs.next()) {
+                isValid = true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        
+        return isValid;
+    }
+}
+
+web.xml
+
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" version="3.0">
+    <servlet>
+        <servlet-name>LoginServlet</servlet-name>
+        <servlet-class>LoginServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/login</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>HomePage</servlet-name>
+        <servlet-class>HomePage</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>HomePage</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+</web-app>
+
+
+6-b user validation using xml---------------------------------------------------------------------------------------
+Go to C:\xampp\tomcat\webapps\
+1) Create a project folder “week6b”
+2) Create the index.html file inside week6b folder
+3) Inside week6b, create another folder “WEB-INF”
+4) Inside WEB-INF create a folder “classes”
+5) Inside WEB-INF create a file called web.xml
+6) Inside classes folder create LoginServlet.java
+7) Goto command prompt give command-
+a)	Javac -cp c:\xampp\tomcat\lib\servlet-api.jar LoginServlet.java
+8) Open Xampp server control panel
+9) Start tomcat
+10) Goto Browser and type- http://localhost:8080/week6b/index.html
+11) You will find the login page
+
+index.html
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Page</title>
+</head>
+<body>
+    <h2>Login</h2>
+    <form action="LoginServlet" method="post">
+        Username: <input type="text" name="username" required><br><br>
+        Password: <input type="password" name="password" required><br><br>
+        <input type="submit" value="Login">
+    </form>
+</body>
+</html>
+
+
+loginServlet.java
+
+import java.io.*;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+import javax.xml.parsers.*;
+import org.w3c.dom.*;
+
+@WebServlet("/LoginServlet")
+public class LoginServlet extends HttpServlet {
+    private static final String XML_FILE_PATH = "/WEB-INF/users.xml";
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+
+        if (isValidUser(username, password, getServletContext().getRealPath(XML_FILE_PATH))) {
+            response.getWriter().println("<h1>Login Successful! Welcome, " + username + ".</h1>");
+        } else {
+            response.getWriter().println("<h1>Login Failed! Invalid username or password.</h1>");
+        }
+    }
+
+    private boolean isValidUser(String username, String password, String xmlFilePath) {
+        try {
+            File xmlFile = new File(xmlFilePath);
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document document = builder.parse(xmlFile);
+            document.getDocumentElement().normalize();
+
+            NodeList nodeList = document.getElementsByTagName("user");
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                Node node = nodeList.item(i);
+                if (node.getNodeType() == Node.ELEMENT_NODE) {
+                    Element element = (Element) node;
+                    String xmlUsername = element.getElementsByTagName("username").item(0).getTextContent();
+                    String xmlPassword = element.getElementsByTagName("password").item(0).getTextContent();
+
+                    if (xmlUsername.equals(username) && xmlPassword.equals(password)) {
+                        return true;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+}
+
+users.xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<users>
+    <user>
+        <username>admin</username>
+        <password>1234</password>
+    </user>
+    <user>
+        <username>user1</username>
+        <password>user1@123</password>
+    </user>
+    <user>
+        <username>user3</username>
+        <password>user3@123</password>
+    </user>
+</users>
+
+web.xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+         http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" 
+         version="3.0">
+
+    <display-name>User Login Application</display-name>
+
+    <!-- Servlet Configuration -->
+    <servlet>
+        <servlet-name>LoginServlet</servlet-name>
+        <servlet-class>LoginServlet</servlet-class>
+    </servlet>
+
+    <!-- Servlet Mapping -->
+    <servlet-mapping>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/LoginServlet</url-pattern>
+    </servlet-mapping>
+
+    <!-- Welcome File -->
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
+
+</web-app>
+
+7-a servlet calculator--------------------------------------------------------------------------
+How to Run:
+1)	Goto c:\xampp\tomcat\webapps\week7a\WEB-INF\classes
+2)	Javac –cp c:\xampp\tomcat\lib\servlet-api.jar CalculatorServlet.java
+3)	Open xampp control panel and start tomcat
+4)	Open browser and check http:\\locathost:8080\weeek7a\calculator.html
+
+calculator.html
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Calculator</title>
+</head>
+<body>
+    <h2>Simple Calculator</h2>
+    <form action="CalculatorServlet" method="post">
+        Number 1: <input type="number" name="num1" required><br><br>
+        Operator:
+        <select name="operator" required>
+            <option value="+">+</option>
+            <option value="-">-</option>
+            <option value="*">*</option>
+            <option value="/">/</option>
+            <option value="%">%</option>
+        </select><br><br>
+        Number 2: <input type="number" name="num2" required><br><br>
+        <input type="submit" value="Calculate">
+    </form>
+</body>
+</html>
+
+calculatorServlet.java
+
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+public class CalculatorServlet extends HttpServlet {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+        
+        try {
+            double num1 = Double.parseDouble(request.getParameter("num1"));
+            double num2 = Double.parseDouble(request.getParameter("num2"));
+            String operator = request.getParameter("operator");
+            double result = 0;
+
+            switch (operator) {
+                case "+": result = num1 + num2; break;
+                case "-": result = num1 - num2; break;
+                case "*": result = num1 * num2; break;
+                case "/":
+                    if (num2 != 0) result = num1 / num2;
+                    else throw new ArithmeticException("Cannot divide by zero");
+                    break;
+                case "%":
+                    if (num2 != 0) result = num1 % num2;
+                    else throw new ArithmeticException("Cannot mod by zero");
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid operator");
+            }
+
+            out.println("<html><body>");
+            out.println("<h2>Calculation Result</h2>");
+            out.println("<p>" + num1 + " " + operator + " " + num2 + " = " + result + "</p>");
+            out.println("<a href='calculator.html'>Try Again</a>");
+            out.println("</body></html>");
+        } catch (Exception e) {
+            out.println("<html><body>");
+            out.println("<h2>Error:</h2>");
+            out.println("<p>" + e.getMessage() + "</p>");
+            out.println("<a href='calculator.html'>Go Back</a>");
+            out.println("</body></html>");
+        }
+    }
+}
+
+web.xml
+
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" version="3.0">
+    <servlet>
+    <servlet-name>CalculatorServlet</servlet-name>
+    <servlet-class>CalculatorServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>CalculatorServlet</servlet-name>
+    <url-pattern>/CalculatorServlet</url-pattern>
+</servlet-mapping>
+</web-app>
+
+7-b servlet cookies-----------------------------------------------------------------------------
+How to Run:
+1)	Goto c:\xampp\tomcat\webapps\week7b\WEB-INF\classes
+2)	Javac –cp c:\xampp\tomcat\lib\servlet-api.jar *.java
+3)	Open xampp control panel and start tomcat
+4)	Open browser and check http:\\locathost:8080\weeek7b\cookies.html
+
+
+cookies.html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cookie Manager</title>
+</head>
+<body>
+    <h2>Cookie Manager</h2>
+
+    <!-- Form to set cookies -->
+    <form action="SetCookiesServlet" method="post">
+        Name: <input type="text" name="username" required><br><br>
+        Age: <input type="number" name="age" required><br><br>
+        <input type="submit" value="Add Cookies">
+    </form>
+
+    <br>
+
+    <!-- Button to list cookies -->
+    <form action="ListCookiesServlet" method="get">
+        <input type="submit" value="List Cookies">
+    </form>
+</body>
+</html>
+
+SetCookiesServlet.java
+
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+public class SetCookiesServlet extends HttpServlet {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String username = request.getParameter("username");
+        String age = request.getParameter("age");
+
+        Cookie cookie1 = new Cookie("username", username);
+        Cookie cookie2 = new Cookie("age", age);
+
+        cookie1.setMaxAge(3600); // 1 hour
+        cookie2.setMaxAge(3600);
+
+        response.addCookie(cookie1);
+        response.addCookie(cookie2);
+
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+
+        out.println("<html><body>");
+        out.println("<h2>Cookies Added Successfully!</h2>");
+        out.println("<p>Name: " + username + "</p>");
+        out.println("<p>Age: " + age + "</p>");
+        out.println("<a href='cookies.html'>Back to Cookie Manager</a>");
+        out.println("</body></html>");
+    }
+}
+
+ListCookiesServlet.java
+
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+public class ListCookiesServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+
+        out.println("<html><body>");
+        out.println("<h2>List of Cookies</h2>");
+
+        Cookie[] cookies = request.getCookies();
+
+        if (cookies != null && cookies.length > 0) {
+            out.println("<ul>");
+            for (Cookie cookie : cookies) {
+                out.println("<li><strong>" + cookie.getName() + "</strong>: " + cookie.getValue() + "</li>");
+            }
+            out.println("</ul>");
+        } else {
+            out.println("<p>No cookies found!</p>");
+        }
+
+        out.println("<a href='cookies.html'>Back to Cookie Manager</a>");
+        out.println("</body></html>");
+    }
+}
+
+web.xml
+
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" version="3.0">
+    <servlet>
+        <servlet-name>SetCookiesServlet</servlet-name>
+        <servlet-class>SetCookiesServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SetCookiesServlet</servlet-name>
+        <url-pattern>/SetCookiesServlet</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>ListCookiesServlet</servlet-name>
+        <servlet-class>ListCookiesServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ListCookiesServlet</servlet-name>
+        <url-pattern>/ListCookiesServlet</url-pattern>
+    </servlet-mapping>
+    
+    </web-app>
+    
+
+8-a jsp user validation--------------------------------------------------------------------------
+
+→• in lib folder place MySQL.jar file
+How to run:
+1.	Create a folder as week8a in c:\xampp\tomcat\webapps\
+2.	Save both login.html and login.jsp inside week8a folder
+3.	Open xampp control panel and start tomcat
+4.	Goto browser localhost:8080/week_8a/login.html
+
+
+
+login.html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Page</title>
+</head>
+<body>
+    <h2>User Login</h2>
+    <form method="post" action="login.jsp">
+        <label>Username:</label>
+        <input type="text" name="username" required><br><br>
+        <label>Password:</label>
+        <input type="password" name="password" required><br><br>
+        <input type="submit" value="Login">
+    </form>
+</body>
+</html>
+
+login.jsp
+
+<%@ page import="java.sql.*" %>
+<%@ page import="javax.servlet.*,javax.servlet.http.*" %>
+<%
+    String user = request.getParameter("username");
+    String pass = request.getParameter("password");
+
+    boolean isValid = false;
+
+    Connection conn = null;
+    PreparedStatement pst = null;
+    ResultSet rs = null;
+
+    String url = "jdbc:mysql://localhost:3306/mydb"; // replace with your DB name
+    String dbUser = "root";     // your DB username
+    String dbPass = "Santosh@2006"; // your DB password
+
+    try {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        conn = DriverManager.getConnection(url, dbUser, dbPass);
+
+        String sql = "SELECT * FROM users WHERE username=? AND password=?";
+        pst = conn.prepareStatement(sql);
+        pst.setString(1, user);
+        pst.setString(2, pass);
+
+        rs = pst.executeQuery();
+
+        if (rs.next()) {
+            isValid = true;
+        }
+    } catch (Exception e) {
+        e.printStackTrace(new java.io.PrintWriter(out));
+    } finally {
+        if (rs != null) rs.close();
+        if (pst != null) pst.close();
+        if (conn != null) conn.close();
+    }
+
+    if (isValid) {
+%>
+        <h2>Login Successful!</h2>
+        <p>Welcome, <%= user %>!</p>
+<%
+    } else {
+%>
+        <h2>Login Failed!</h2>
+        <p>Invalid username or password.</p>
+<%
+    }
+%>
+
+8-b jsp calculator--------------------------------------------------------------
+→• in lib folder place MySQL.jar file
+How to run:
+1.	Create a folder as week8b in c:\xampp\tomcat\webapps\
+2.	Save both calculato.html and calculator.jsp inside week8b folder
+3.	Open xampp control panel and start tomcat
+4.	Goto browser localhost:8080/week_8b/calculatr.html
+
+
+calculator.html
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Calculator</title>
+</head>
+<body>
+    <h2>Calculator</h2>
+    <form action="calculator.jsp" method="post">
+        <label>First Number:</label>
+        <input type="number" name="num1" required><br><br>
+
+        <label>Second Number:</label>
+        <input type="number" name="num2" required><br><br>
+
+        <label>Operator:</label>
+        <select name="operator">
+            <option value="+">Addition (+)</option>
+            <option value="-">Subtraction (-)</option>
+            <option value="*">Multiplication (*)</option>
+            <option value="/">Division (/)</option>
+            <option value="%">Modulus (%)</option>
+        </select><br><br>
+
+        <input type="submit" value="Calculate">
+    </form>
+</body>
+</html>
+
+calculator.jsp
+
+<%@ page import="java.io.*" %>
+<%
+    double num1 = Double.parseDouble(request.getParameter("num1"));
+    double num2 = Double.parseDouble(request.getParameter("num2"));
+    String operator = request.getParameter("operator");
+    double result = 0;
+    boolean validOperation = true;
+    String message = "";
+
+    switch (operator) {
+        case "+":
+            result = num1 + num2;
+            break;
+        case "-":
+            result = num1 - num2;
+            break;
+        case "*":
+            result = num1 * num2;
+            break;
+        case "/":
+            if (num2 != 0)
+                result = num1 / num2;
+            else {
+                validOperation = false;
+                message = "Cannot divide by zero!";
+            }
+            break;
+        case "%":
+            if (num2 != 0)
+                result = num1 % num2;
+            else {
+                validOperation = false;
+                message = "Cannot perform modulus by zero!";
+            }
+            break;
+        default:
+            validOperation = false;
+            message = "Invalid operator!";
+    }
+%>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Calculation Result</title>
+</head>
+<body>
+    <h2>Result</h2>
+    <% if (validOperation) { %>
+        <p><%= num1 %> <%= operator %> <%= num2 %> = <%= result %></p>
+    <% } else { %>
+        <p style="color: red;"><%= message %></p>
+    <% } %>
+    <br>
+    <a href="calculator.html">Try Again</a>
+</body>
+</html>
+
+9-a jsp cookies-----------------------------------------------------------------------
+How to run:
+1.	Create a folder as week9a in c:\xampp\tomcat\webapps\
+2.	Save both index.jsp and listcookies.jsp and secookies.jsp inside week9a folder
+3.	Open xampp control panel and start tomcat
+4.	Goto browser localhost:8080/week_9a/index.jsp
+
+index.jsp
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cookie Manager</title>
+</head>
+<body>
+    <h2>Cookie Manager</h2>
+
+    <!-- Form to set cookies -->
+    <form action="setcookies.jsp" method="post">
+        Name: <input type="text" name="name" required><br><br>
+        Email: <input type="Email" name="email" required><br><br>
+        <input type="submit" value="Add Cookies">
+    </form>
+
+    <br>
+
+    <!-- Button to list cookies -->
+    <form action="listcookies.jsp" method="get">
+        <input type="submit" value="List Cookies">
+    </form>
+</body>
+</html>
+
+setcookies.jsp
+
+<%@ page import="javax.servlet.http.Cookie" %>
+<%@ page import="java.net.URLEncoder" %>
+<%
+    String name = request.getParameter("name");
+    String email = request.getParameter("email");
+
+    String encodedName = URLEncoder.encode(name, "UTF-8");
+    String encodedEmail = URLEncoder.encode(email, "UTF-8");
+
+    Cookie c1 = new Cookie("user", encodedName);
+    Cookie c2 = new Cookie("email", encodedEmail);
+
+    c1.setMaxAge(3600);
+    c2.setMaxAge(3600);
+
+    response.addCookie(c1);
+    response.addCookie(c2);
+%>
+<html>
+  <body>
+    <h2>Sample cookies set!</h2>
+    <a href="index.jsp">Go to Cookie Viewer</a>
+  </body>
+</html>
+
+listcookies.jsp
+
+<%@ page import="javax.servlet.http.Cookie" %>
+<%
+    Cookie[] cookies = request.getCookies();
+%>
+<html>
+  <head>
+    <title>Stored Cookies</title>
+  </head>
+  <body>
+    <h2>Cookies Stored in Your Browser</h2>
+    <%
+        if (cookies != null && cookies.length > 0) {
+    %>
+        <table border="1">
+          <tr>
+            <th>Cookie Name</th>
+            <th>Cookie Value</th>
+          </tr>
+          <%
+              for (Cookie c : cookies) {
+          %>
+          <tr>
+            <td><%= c.getName() %></td>
+            <td><%= c.getValue() %></td>
+          </tr>
+          <%
+              }
+          %>
+        </table>
+    <%
+        } else {
+    %>
+        <p>No cookies found!</p>
+    <%
+        }
+    %>
+  </body>
+</html>
+
+
+9-b jsp check age----------------------------------------------------------------------------------
+How to run:
+1.	Create a folder as week9b in c:\xampp\tomcat\webapps\
+2.	Save both index.jsp and checkage.jsp inside week9b folder
+3.	Open xampp control panel and start tomcat
+4.	Goto browser localhost:8080/week_9b/index.jsp
+
+index.jsp
+
+<html>
+  <head>
+    <title>User Age Check</title>
+  </head>
+  <body>
+    <h2>Enter Your Details</h2>
+    <form action="checkAge.jsp" method="post">
+      Name: <input type="text" name="name" required><br><br>
+      Age: <input type="number" name="age" required><br><br>
+      <input type="submit" value="Submit">
+    </form>
+  </body>
+</html>
+
+
+checkage.jsp
+
+<%
+    String name = request.getParameter("name");
+    int age = Integer.parseInt(request.getParameter("age"));
+%>
+<html>
+  <head>
+    <title>Age Check Result</title>
+  </head>
+  <body>
+    <h2>
+    <%
+        if (age < 18) {
+    %>
+        Hello <%= name %>, you are not authorized to visit this site.
+    <%
+        } else {
+    %>
+        Welcome <%= name %> to this site!
+    <%
+        }
+    %>
+    </h2>
+  </body>
+</html>
+
+10-a php user validation------------------------------------------------
+
+How to run:
+1.	Create a folder as week10a in c:\xampp\htdocs\
+2.	Save both login.html and login.php inside week10a folder
+3.	Open xampp control panel and start apache
+4.	Goto browser localhost/week10a/login.html
+
+login.html
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login</title>
+</head>
+<body>
+  <h2>User Login</h2>
+  <form action="login.php" method="post">
+    Username: <input type="text" name="username" required><br><br>
+    Password: <input type="password" name="password" required><br><br>
+    <input type="submit" value="Login">
+  </form>
+</body>
+</html>
+
+login.php
+
+<?php
+// Database connection settings
+$host = 'localhost';
+$user = 'root';       // your DB username
+$pass = 'Santosh@2006';           // your DB password
+$db   = 'mydb';
+
+// Connect to database
+$conn = new mysqli($host, $user, $pass, $db);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Get data from form
+$username = $_POST['username'];
+$password = $_POST['password'];
+
+// Use prepared statement to prevent SQL injection
+$stmt = $conn->prepare("SELECT * FROM users WHERE username = ? AND password = ?");
+$stmt->bind_param("ss", $username, $password);
+$stmt->execute();
+$result = $stmt->get_result();
+
+// Check if match found
+if ($result->num_rows === 1) {
+    echo "<h2>Login successful. Welcome, $username!</h2>";
+} else {
+    echo "<h3>Login failed. Invalid username or password.</h3>";
+}
+
+// Clean up
+$stmt->close();
+$conn->close();
+?>
+
+10-b php calculator---------------------------------------------------------------------------
+How to run:
+1.	Create a folder as week10b in c:\xampp\htdocs\
+2.	Save both calculator.html and calculator.php inside week10b folder
+3.	Open xampp control panel and start apache
+4.	Goto browser localhost/week10b/calculator.html
+
+calculator.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator with PHP</title>
+</head>
+<body>
+    <form action="calculator.php" method="post">
+        Enter Number 1: <input type="number" name="num1"><br><br>
+        Enter Number 2: <input type="number" name="num2"><br><br>
+        <select name="operator">
+            <option value="+">+</option>
+            <option value="-">-</option>
+            <option value="*">*</option>
+            <option value="/">/</option>
+            <option value="%">%</option>
+        </select>
+        <input type="submit" value="calculator">
+    </form>
+</body>
+</html>
+
+calculator.php
+
+<?php
+$n1=$_POST['num1'];
+$n2=$_POST['num2'];
+$operator=$_POST['operator'];
+switch($operator)
+{
+    case '+': $result=$n1+$n2;break;
+    case '-': $result=$n1-$n2;break;
+    case '*': $result=$n1*$n2;break;
+    case '/': $n2!=0?$result=$n1/$n2:$result="division by zero is not possible";break;
+    case '%': $n2!=0?$result=$n1%$n2:$result="Can't find remainder as division by zero is not possible";break;
+    default : echo "Invalid operation";
+}
+
+echo "The Result of $n1 $operator $n2 is : $result";
+?>
+<br><br>
+<a href="calculator.html">Calculate again</a>
+
+11 php registration fields--------------------------------------------------------------------------------
+How to run:
+1.	Create a folder as week11 in c:\xampp\htdocs\
+2.	Save both register.html and validate.php inside week10b folder
+3.	Open xampp control panel and start apache
+4.	Goto browser localhost/week10b/register.html
+
+
+register.html
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Registration</title>
+</head>
+<body>
+  <h2>Registration Form</h2>
+  <form action="validate.php" method="post">
+    Name: <input type="text" name="name" required><br><br>
+    Password: <input type="password" name="password" required><br><br>
+    Email: <input type="text" name="email" required><br><br>
+    Phone: <input type="text" name="phone" required><br><br>
+    <input type="submit" value="Register">
+  </form>
+</body>
+</html>
+
+validate.php
+
+<?php
+// Get form data
+$name = $_POST['name'];
+$password = $_POST['password'];
+$email = $_POST['email'];
+$phone = $_POST['phone'];
+
+// Initialize error array
+$errors = [];
+
+// 1. Validate Name: only letters and minimum 6 characters
+if (!preg_match("/^[a-zA-Z]{6,}$/", $name)) {
+    $errors[] = "Name must be at least 6 alphabetic characters.";
+}
+
+// 2. Validate Password: at least 6 characters
+if (strlen($password) < 6) {
+    $errors[] = "Password must be at least 6 characters long.";
+}
+
+// 3. Validate Email: standard email format
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    $errors[] = "Invalid email format.";
+}
+
+// 4. Validate Phone Number: exactly 10 digits
+if (!preg_match("/^[0-9]{10}$/", $phone)) {
+    $errors[] = "Phone number must be exactly 10 digits.";
+}
+
+// Display result
+if (empty($errors)) {
+    echo "<h2>Registration Successful!</h2>";
+    echo "Name: $name<br>";
+    echo "Email: $email<br>";
+    echo "Phone: $phone<br>";
+} else {
+    echo "<h3>Registration Failed with the following error(s):</h3>";
+    echo "<ul>";
+    foreach ($errors as $error) {
+        echo "<li>$error</li>";
+    }
+    echo "</ul>";
+}
+?>
+
+12 php web application----------------------------------------------------------------------------
+run this by localhost/week12/login.php
+
+login.php
+
+<!DOCTYPE html>
+<html>
+<head><title>Login</title></head>
+<body>
+  <h2>Login</h2>
+  <form action="process.php" method="post">
+    Login Name: <input type="text" name="login_name" required><br><br>
+    Password: <input type="password" name="password" required><br><br>
+    <input type="submit" value="Login">
+  </form>
+</body>
+</html>
+
+process.php
+
+<?php
+session_start();
+
+// Get input
+$login_name = $_POST['login_name'];
+$password = $_POST['password'];
+
+// Store in session
+$_SESSION['login_name'] = $login_name;
+$_SESSION['password'] = $password;
+
+// DB connection
+$conn = new mysqli("localhost", "root", "Santosh@2006", "user_db");
+if ($conn->connect_error) die("Connection failed.");
+
+// Check if login name exists
+$stmt = $conn->prepare("SELECT * FROM users WHERE login_name = ?");
+$stmt->bind_param("s", $login_name);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows === 1) {
+    $row = $result->fetch_assoc();
+    if ($row['password'] === $password) {
+        $_SESSION['full_name'] = $row['full_name'];
+        header("Location: welcome.php");
+    } else {
+        header("Location: password_mismatch.php");
+    }
+} else {
+    header("Location: register.php"); // Redirect to collect full name
+}
+?>
+
+password_mismatch.php
+
+<?php
+echo "<h3>Password Mismatch. Please try again.</h3>";
+?>
+<a href="login.php">Login again</a>
+
+register.php
+
+<?php session_start(); ?>
+<!DOCTYPE html>
+<html>
+<head><title>Register</title></head>
+<body>
+  <h2>New User Registration</h2>
+  <form action="save_user.php" method="post">
+    Full Name: <input type="text" name="full_name" required><br><br>
+    <input type="submit" value="Register">
+  </form>
+</body>
+</html>
+
+save_user.php
+
+<?php
+session_start();
+
+$login_name = $_SESSION['login_name'];
+$password = $_SESSION['password'];
+$full_name = $_POST['full_name'];
+
+$conn = new mysqli("localhost", "root", "Santosh@2006", "user_db");
+if ($conn->connect_error) die("Connection failed.");
+
+$stmt = $conn->prepare("INSERT INTO users (login_name, password, full_name) VALUES (?, ?, ?)");
+$stmt->bind_param("sss", $login_name, $password, $full_name);
+if ($stmt->execute()) {
+    $_SESSION['full_name'] = $full_name;
+    header("Location: welcome.php");
+} else {
+    echo "Registration failed.";
+}
+?>
+
+welcome.php
+
+<?php
+session_start();
+echo "<h2>Welcome, " . htmlspecialchars($_SESSION['full_name']) . "!</h2>";
+?>
+
+additional prgms------------------------------------------------------------------------------
+cookie servlet example-------------------------------------
+index.html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cookie Demo</title>
+</head>
+<body>
+    <h2>Enter Your Name</h2>
+    <form action="setcookie" method="post">
+        <input type="text" name="username" placeholder="Your name" required />
+        <input type="submit" value="Submit" />
+    </form>
+</body>
+</html>
+
+
+SetCookieServlet.java
+import java.io.IOException;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+public class SetCookieServlet extends HttpServlet {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String name = request.getParameter("username");
+
+        Cookie cookie = new Cookie("username", name);
+        cookie.setMaxAge(60 * 60); // 1 hour
+        response.addCookie(cookie);
+
+        response.sendRedirect("readcookie");
+    }
+}
+
+
+ReadCookieServlet.java
+import java.io.IOException;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+public class ReadCookieServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String name = null;
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("username".equals(c.getName())) {
+                    name = c.getValue();
+                }
+            }
+        }
+
+        response.setContentType("text/html");
+        if (name != null) {
+            response.getWriter().println("<h2>Hello, " + name + "!</h2>");
+            response.getWriter().println("<a href='deletecookie'>Logout</a>");
+        } else {
+            response.sendRedirect("index.html");
+        }
+    }
+}
+
+
+DeleteCookieServlet.java
+import java.io.IOException;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+public class DeleteCookieServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        Cookie cookie = new Cookie("username", "");
+        cookie.setMaxAge(0); // Delete the cookie
+        response.addCookie(cookie);
+
+        response.sendRedirect("index.html");
+    }
+}
+
+
+web.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee 
+                             http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+         version="3.1">
+
+    <servlet>
+        <servlet-name>SetCookieServlet</servlet-name>
+        <servlet-class>SetCookieServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SetCookieServlet</servlet-name>
+        <url-pattern>/setcookie</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>ReadCookieServlet</servlet-name>
+        <servlet-class>ReadCookieServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ReadCookieServlet</servlet-name>
+        <url-pattern>/readcookie</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>DeleteCookieServlet</servlet-name>
+        <servlet-class>DeleteCookieServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DeleteCookieServlet</servlet-name>
+        <url-pattern>/deletecookie</url-pattern>
+    </servlet-mapping>
+
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
+</web-app>
+
+request dispatcher demo---------------------------------------------------------------
+index.html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Enter Username</title>
+</head>
+<body>
+    <form action="add" method="GET">
+        Enter num1: <input type="text" name="num1"><br><br>
+        Enter num2: <input type="text" name="num2"><br><br>
+        <input type="submit" value="send">
+    </form>
+</body>
+</html>
+
+AddServlet.java
+import java.io.IOException;
+import java.io.PrintWriter;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+public class AddServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+        
+        int a = Integer.parseInt(request.getParameter("num1"));
+        int b = Integer.parseInt(request.getParameter("num2"));
+        int c=a+b;
+        request.setAttribute("c", c);
+        
+        // Forward the request to SecondServlet
+        RequestDispatcher dispatcher = request.getRequestDispatcher("square");
+        dispatcher.forward(request, response);
+    }
+}
+SquareServlet.java
+import java.io.IOException;
+import java.io.PrintWriter;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+// Second Servlet
+@WebServlet("/SecondServlet")
+public class SquareServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+        
+        int c = (int)(request.getAttribute("c"));
+        int result=c*c;
+        out.println("<h2>Result is " + result + "</h2>");
+    }
+}
+
+web.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" version="3.0">
+    
+    <servlet>
+        <servlet-name>AddServlet</servlet-name>
+        <servlet-class>AddServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>AddServlet</servlet-name>
+        <url-pattern>/add</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>SquareServlet</servlet-name>
+        <servlet-class>SquareServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>SquareServlet</servlet-name>
+        <url-pattern>/square</url-pattern>
+    </servlet-mapping>
+
+</web-app>
+
+send redirect demo---------------------------------------------------------
+index.html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google Search</title>
+</head>
+<body>
+    <h2>Search on Google</h2>
+    <form action="GoogleSearchServlet" method="get">
+        <label>Enter search query:</label>
+        <input type="text" name="query" required>
+        <input type="submit" value="Search">
+    </form>
+</body>
+</html>
+
+GoogleSearchServlet.java
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+@WebServlet("/GoogleSearchServlet")
+public class GoogleSearchServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        
+        // Get the search query from the request
+        String query = request.getParameter("query");
+
+        // Ensure the query is not empty
+        if (query == null || query.trim().isEmpty()) {
+            response.getWriter().println("<h2>Please enter a search term.</h2>");
+            return;
+        }
+
+        // Encode the query for the URL
+        String encodedQuery = java.net.URLEncoder.encode(query, "UTF-8");
+
+        // Redirect to Google Search
+        response.sendRedirect("https://www.google.com/search?q=" + encodedQuery);
+    }
+}
+
+web.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+         http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" 
+         version="3.0">
+
+    <servlet>
+        <servlet-name>GoogleSearchServlet</servlet-name>
+        <servlet-class>GoogleSearchServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>GoogleSearchServlet</servlet-name>
+        <url-pattern>/GoogleSearchServlet</url-pattern>
+    </servlet-mapping>
+
+</web-app>
+
+
+http session demo------------------------------------------------------------------
+index.html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Page</title>
+</head>
+<body>
+    <h2>Login</h2>
+    <form action="login" method="post">
+        <input type="text" name="username" placeholder="Enter username" required />
+        <input type="submit" value="Login" />
+    </form>
+</body>
+</html>
+
+LoginServlet.java
+import java.io.IOException;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+public class LoginServlet extends HttpServlet {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String username = request.getParameter("username");
+
+        HttpSession session = request.getSession();
+        session.setAttribute("username", username);
+
+        response.sendRedirect("welcome");
+    }
+}
+WelcomeServlet.java
+import java.io.IOException;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+public class WelcomeServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        HttpSession session = request.getSession(false);
+
+        response.setContentType("text/html");
+
+        if (session != null && session.getAttribute("username") != null) {
+            String user = (String) session.getAttribute("username");
+            response.getWriter().println("<h2>Welcome, " + user + "!</h2>");
+            response.getWriter().println("<a href='logout'>Logout</a>");
+        } else {
+            response.sendRedirect("login.html");
+        }
+    }
+}
+
+LogoutServlet.java
+import java.io.IOException;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+public class LogoutServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+
+        response.sendRedirect("login.html");
+    }
+}
+
+web.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee 
+                             http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+         version="3.1">
+
+    <servlet>
+        <servlet-name>LoginServlet</servlet-name>
+        <servlet-class>LoginServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/login</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>WelcomeServlet</servlet-name>
+        <servlet-class>WelcomeServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>WelcomeServlet</servlet-name>
+        <url-pattern>/welcome</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>LogoutServlet</servlet-name>
+        <servlet-class>LogoutServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LogoutServlet</servlet-name>
+        <url-pattern>/logout</url-pattern>
+    </servlet-mapping>
+
+    <welcome-file-list>
+        <welcome-file>login.html</welcome-file>
+    </welcome-file-list>
+</web-app>
+
+
+hello jsp demo-----------------------------------------------------------------
+index.jsp
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+    <head>
+        <tilte>My First JSP Demo</tilte>
+    </head>
+    <body>
+        <% for(int i=0;i<5;i++) { %>
+        <h3>Hello Gcet</h3>
+        <% } %>
+    </body>
+</html>
+web.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee 
+                             http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+         version="3.1">
+
+    <display-name>Hello JSP</display-name>
+
+    <!-- Welcome file list -->
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+
+</web-app>
+
+java bean example-------------------------------------------------------------
+input.jsp  
+(save inside c:\xampp\tomcat\webapps\JavaBeanExample\)
+<html>
+<head><title>User Input</title></head>
+<body>
+    <form action="process.jsp" method="post">
+        Name: <input type="text" name="name" /><br>
+        Age: <input type="text" name="age" /><br>
+        <input type="submit" value="Submit" />
+    </form>
+</body>
+</html>
+
+process.jsp
+(save inside c:\xampp\tomcat\webapps\JavaBeanExample\)
+<%@ page import="demo.User" %>
+<jsp:useBean id="user" class="demo.User" scope="request" />
+<jsp:setProperty name="user" property="*" />
+
+<html>
+<head><title>User Info</title></head>
+<body>
+    <h2>User Information</h2>
+    Name: <%= user.getName() %><br>
+    Age: <%= user.getAge() %><br>
+</body>
+</html>
+
+User.java
+(save inside c:\xampp\tomcat\webapps\JavaBeanExample\WEB-INF\classes\demo\)
+package demo;
+
+public class User {
+    private String name;
+    private int age;
+
+    // Constructor
+    public User() {}
+
+    // Getter and Setter for name
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    // Getter and Setter for age
+    public int getAge() {
+        return age;
+    }
+    public void setAge(int age) {
+        this.age = age;
+    }
+}
+
+ Compile java with c:\xampp\tomcat\webapps\JavaBeanExample\WE-INF\classes\demo\javac –d  User.java
+
+Start xampp server and find output at http://localhost:8080\JavaBeanExample\input.jsp
+
