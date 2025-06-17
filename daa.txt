@@ -1305,4 +1305,156 @@ public class InorderIterative {
         tree.inorderTraversal(root);
     }
 }
---------------------------------------------------------------------------------------------------------------------------------------------------------------
+nqueens--------------------------------------------------------------------------------------------------------------------------------------------------------------
+import java.util.*;
+
+public class NQueens
+{
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter no of queens");
+        int n = sc.nextInt();
+        int x[] = new int[n];
+        int k = 0;
+        nq(k,n,x);
+        sc.close();
+    }
+
+    static void nq(int k,int n,int x[])
+    {
+        for(int i=0;i<n;i++)
+        {
+            if(Place(k,i,n,x))
+            {
+                x[k] = i;
+                if(k==n-1)
+                {
+                    for(int j=0;j<n;j++)
+                    {
+                        System.out.print(x[j]+" ");
+                    }
+                    System.out.println();
+                }
+                else
+                {
+                    nq(k+1,n,x);
+                }
+            }
+        }
+    }
+
+    static boolean Place(int k,int i,int n,int x[])
+    {
+        for(int j=0;j<k;j++)
+        {
+            if(x[j]==i || (Math.abs(x[j]-i)==Math.abs(j-k)))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+sumofsub--------------------------------------------------------
+import java.util.*;
+
+public class SumOfSubsets {
+
+    static void subsets(int s,int r,int k,int w[],int m,int x[])
+    {
+        x[k] = 1;
+        if(s+w[k]==m)
+        {
+            for(int i=0;i<x.length;i++)
+               System.out.print(x[i]+" ");
+            System.out.println();
+        }
+        else if(s+w[k]+w[k+1]<=m)
+            subsets(s+w[k],r-w[k],k+1,w,m,x);
+        else if((s+r-w[k])>=m && s+w[k+1]<=m )
+        {
+            x[k] = 0;
+            subsets(s,r-w[k],k+1,w,m,x);
+        }
+    }
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter no of elements");
+        int n = sc.nextInt();
+        System.out.println("Enter max weight");
+        int m = sc.nextInt();
+        int w[] = new int[n];
+        System.out.println("Enter weight array elements");
+        int r = 0;
+        for(int i=0;i<n;i++)
+        {
+           w[i] = sc.nextInt();
+           r += w[i];
+        }
+        int x[] = new int[w.length];
+        subsets(0,r,0,w,m,x);
+        sc.close();
+    }
+}
+obst-------------------------------------------------
+import java.util.Scanner;
+
+public class OBST {
+    // Function to calculate sum of frequencies from i to j
+    static int sum(int freq[], int i, int j) {
+        int s = 0;
+        for (int k = i; k <= j; k++)
+            s += freq[k];
+        return s;
+    }
+
+    // Function to compute minimum cost of OBST
+    public static int optimalSearchTree(int key[], int freq[], int n) {
+        int cost[][] = new int[n][n];
+
+        // cost for single keys
+        for (int i = 0; i < n; i++)
+            cost[i][i] = freq[i];
+
+        // l is chain length
+        for (int l = 2; l <= n; l++) {
+            for (int i = 0; i <= n - l; i++) {
+                int j = i + l - 1;
+                cost[i][j] = Integer.MAX_VALUE;
+
+                // try making all keys in interval root
+                for (int r = i; r <= j; r++) {
+                    int c = ((r > i) ? cost[i][r - 1] : 0) +
+                            ((r < j) ? cost[r + 1][j] : 0) +
+                            sum(freq, i, j);
+                    if (c < cost[i][j])
+                        cost[i][j] = c;
+                }
+            }
+        }
+
+        return cost[0][n - 1];
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter number of keys: ");
+        int n = sc.nextInt();
+
+        int[] key = new int[n];
+        int[] freq = new int[n];
+
+        System.out.println("Enter keys in sorted order:");
+        for (int i = 0; i < n; i++)
+            key[i] = sc.nextInt();
+
+        System.out.println("Enter frequency for each key:");
+        for (int i = 0; i < n; i++)
+            freq[i] = sc.nextInt();
+
+        int minCost = optimalSearchTree(key, freq, n);
+        System.out.println("Minimum cost of OBST: " + minCost);
+    }
+}
+-----------------------------------------------------
