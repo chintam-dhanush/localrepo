@@ -1,0 +1,319 @@
+factorial--------------------------------------------------------------
+print("enter number to calculate its factorial: ")
+num = int(input())
+factorial = 1   
+for i in range(1, num + 1):
+    factorial *= i
+print(f"The factorial of {num} is {factorial}.")
+
+multiplication table--------------------------------------------------------
+print("enter a number to generate its multiplication table: ")
+num = int(input())
+for i in range(1, 11):
+    print(f"{num} x {i} = {num * i}")
+print("Multiplication table generated successfully.")
+
+prime or not -------------------------------------------------------------
+print("enter an number to check if it is prime: ")
+num = int(input())
+is_prime = True 
+if num < 2:
+    is_prime = False
+for i in range(2, int(num**0.5) + 1):
+    if num % i == 0:
+        is_prime = False
+        break   
+if is_prime:
+    print(f"{num} is a prime number.")
+else:
+    print(f"{num} is not a prime number.")      
+
+duplicates-----------------------------------------------------------------
+original_list = [1, 2, 3, 2, 4, 1, 5]
+no_duplicates = list(set(original_list))
+
+print("Original List:", original_list)
+print("List after removing duplicates (unordered):", no_duplicates)
+
+list operations-----------------------------------------
+# List Operations Demo
+
+# 1. Nested List
+nested_list = [[1, 2, 3], [4, 5], [6]]
+print("1. Nested List:", nested_list)
+print("   Accessing nested element:", nested_list[0][1])  # Output: 2
+
+# 2. Length
+simple_list = [10, 20, 30, 40]
+print("\n2. Length of list:", len(simple_list))  # Output: 4
+
+# 3. Concatenation
+list_a = [1, 2, 3]
+list_b = [4, 5]
+combined_list = list_a + list_b
+print("\n3. Concatenated List:", combined_list)  # Output: [1, 2, 3, 4, 5]
+
+# 4. Membership
+print("\n4. Membership (is 3 in list?):", 3 in list_a)   # True
+print("   Membership (is 6 not in list?):", 6 not in list_b)  # True
+
+# 5. Iteration
+print("\n5. Iteration through list:")
+for item in list_a:
+    print("  Item:", item)
+
+# 6. Indexing and Slicing
+print("\n6. Indexing and Slicing")
+sample = ['a', 'b', 'c', 'd', 'e']
+print("   Index 2:", sample[2])       # Output: 'c'
+print("   Slice [1:4]:", sample[1:4]) # Output: ['b', 'c', 'd']
+
+# 7. Add (Insert at a specific index)
+sample.insert(2, 'z')  # Insert 'z' at index 2
+print("\n7. After insert at index 2:", sample)  # ['a', 'b', 'z', 'c', 'd', 'e']
+
+# 8. Append (Add at the end)
+sample.append('f')
+print("\n8. After append:", sample)  # ['a', ..., 'f']
+
+# 9. Extend (Add multiple items at the end)
+sample.extend(['g', 'h'])
+print("\n9. After extend:", sample)  # ['a', ..., 'g', 'h']
+
+# 10. Delete operations
+# Using del
+del sample[1]  # Removes element at index 1
+print("\n10. After del at index 1:", sample)
+
+# Using remove (removes first occurrence of value)
+sample.remove('z')  # Removes 'z'
+print("    After remove('z'):", sample)
+
+# Using pop (removes and returns element)
+popped = sample.pop()  # Removes last element
+print("    After pop():", sample)
+print("    Popped element:", popped)
+
+
+water jug-----------------------------------------------------------------
+def water_jug_problem(jug1_cap, jug2_cap, req):
+    if req > jug1_cap and req > jug2_cap:
+        return None
+    jug1, jug2=0,0
+    steps=[(jug1, jug2)]
+    while jug1 != req and jug2 != req:
+        if jug1==0:
+            jug1=jug1_cap
+        elif jug2==jug2_cap:
+            jug2=0
+        else:
+            transfer=min(jug1, jug2_cap-jug2)
+            jug1 -= transfer
+            jug2 += transfer
+
+        if (jug1, jug2) not in steps:
+            steps.append((jug1, jug2))
+        else:
+            return None
+    return steps
+
+jug1_cap=int(input("Enter the capacity of jug 1: "))
+jug2_cap=int(input("Enter the capacity of jug 2: "))
+req=int(input("Enter the required amount of water required: "))
+steps=water_jug_problem(jug1_cap, jug2_cap, req)
+
+if steps:
+    for jug1, jug2  in steps:
+        print(f"Jug 1: {jug1}, Jug 2: {jug2}")
+else:
+    print("No solution found.")
+
+bfs-dfs--------------------------------------------------------------------
+def dfs(graph, start, visited=None):
+    if visited is None:
+        visited = []
+
+    if start not in visited:
+        visited.append(start)
+        for neighbor in graph[start]:
+            dfs(graph, neighbor, visited)
+    
+    return visited
+
+def bfs(graph, start):
+    visited = []
+    queue = [start]
+
+    while queue:
+        node = queue.pop(0)
+        if node not in visited:
+            visited.append(node)
+            # Add unvisited neighbors to queue
+            for neighbor in graph[node]:
+                if neighbor not in visited and neighbor not in queue:
+                    queue.append(neighbor)
+    
+    return visited
+
+# ---------- Input Section ----------
+graph = {}
+
+# Number of nodes
+n = int(input("Enter the number of nodes: "))
+
+# Number of edges
+e = int(input("Enter the number of edges: "))
+
+# Take edges input
+print("Enter the edges (format: from to):")
+for _ in range(e):
+    u, v = map(int, input().split())
+    if u not in graph:
+        graph[u] = []
+    if v not in graph:
+        graph[v] = []
+    graph[u].append(v)
+
+# Add empty lists for nodes without outgoing edges
+for i in range(n):
+    if i not in graph:
+        graph[i] = []
+
+# Starting node
+start_node = int(input("Enter the starting node: "))
+
+# Perform DFS and BFS
+print(f"\nGraph representation: {graph}")
+print(f"\nDFS traversal starting from node {start_node}: {dfs(graph, start_node)}")
+print(f"BFS traversal starting from node {start_node}: {bfs(graph, start_node)}")
+
+eight_puzzle-------------------------------------------------------------
+from collections import deque
+
+def print_board(board):
+    for i in range(0, 9, 3):
+        print(board[i:i+3])
+    print()
+
+def get_moves(zero_index):
+    moves = []
+    if zero_index >= 3:
+        moves.append(zero_index - 3)
+    if zero_index < 6:
+        moves.append(zero_index + 3)
+    if zero_index % 3 > 0:
+        moves.append(zero_index - 1)
+    if zero_index % 3 < 2:
+        moves.append(zero_index + 1)
+    return moves
+
+def swap(board, pos1, pos2):
+    new_board = board[:]
+    new_board[pos1], new_board[pos2] = new_board[pos2], new_board[pos1]
+    return new_board
+
+def bfs(start, goal):
+    queue = deque([(start, [])])
+    visited = set()
+    visited.add(tuple(start))
+    while queue:
+        board, path = queue.popleft()
+        if board == goal:
+            return path + [board]
+        zero_index = board.index(0)
+        for move in get_moves(zero_index):
+            new_board = swap(board, zero_index, move)
+            if tuple(new_board) not in visited:
+                visited.add(tuple(new_board))
+                queue.append((new_board, path + [board]))
+    return None
+
+# Input from user
+start_board = list(map(int, input("Enter start board (9 numbers separated by space, 0 is blank): ").split()))
+goal_board = list(map(int, input("Enter goal board (9 numbers separated by space, 0 is blank): ").split()))
+
+if len(start_board) != 9 or len(goal_board) != 9:
+    print("Invalid input! Please enter exactly 9 numbers for both boards.")
+else:
+    solution = bfs(start_board, goal_board)
+    if solution:
+        print("Solution found! Steps:")
+        for step in solution:
+            print_board(step)
+    else:
+        print("Solution not found.")
+
+
+tic tac toe------------------------------------------------------
+def print_board(board):
+    for row in board:
+        print("|".join(cell if cell != "" else " " for cell in row))
+        print("-" * 9)
+
+def check_winner(board, player):
+    for row in board:
+        if all(cell == player for cell in row):
+            return True
+    for col in range(3):
+        if all(board[row][col] == player for row in range(3)):
+            return True
+    if all(board[i][i] == player for i in range(3)) or all(board[i][2 - i] == player for i in range(3)):
+        return True
+    return False
+
+def is_full(board):
+    return all(cell != '' for row in board for cell in row)
+
+def tic_tac_toe():
+    board = [[""] * 3 for _ in range(3)]
+    current_player = "x"
+    while True:
+        print_board(board)
+        print(f"player {current_player}'s turn")
+        try:
+            row = int(input("Enter row (0-2): "))
+            col = int(input("Enter col (0-2): "))
+        except ValueError:
+            print("Please enter valid integers for row and column.")
+            continue
+
+        if 0 <= row <= 2 and 0 <= col <= 2:
+            if board[row][col] == "":
+                board[row][col] = current_player
+                if check_winner(board, current_player):
+                    print_board(board)
+                    print(f"Player {current_player} wins!")
+                    break
+                if is_full(board):
+                    print_board(board)
+                    print("It's a draw!")
+                    break
+                current_player = "O" if current_player == "x" else "x"
+            else:
+                print("Invalid move: Cell already occupied. Try again.")
+        else:
+            print("Invalid move: Row and column must be between 0 and 2. Try again.")
+
+if __name__ == "__main__":
+    tic_tac_toe()
+
+
+csp---------------------------------------------------------------------------
+solns=[]
+for s in range(9, -1, -1):
+    for e in range(9, -1, -1):
+        for n in range(9, -1, -1):
+            for d in range(9, -1, -1):
+                for m in range(9, -1, -1):
+                    for o in range(9, -1, -1):
+                        for r in range(9, -1, -1):
+                            for y in range(9, -1, -1):
+                                if s!=0 and m!=0 and len(set([s, e, n, d, m, o, r, y]))==8:
+                                    send=1000*s+100*e+10*n+d
+                                    more=1000*m+100*o+10*r+e
+                                    money=10000*m+1000*o+100*n+10*e+y
+                                    if send+more==money:
+                                        solns.append((send, more, money))
+                                
+for elem in solns:
+    print(elem)
