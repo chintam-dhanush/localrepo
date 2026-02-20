@@ -972,4 +972,489 @@ public class HamiltonianPathBookStyle {
     }
 }
 
---------------------------------------------------------------------------------------
+prims--------------------------------------------------------------------------------------
+
+import java.util.Scanner;
+
+public class simple {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        sc.close();
+
+        // Input number of vertices
+        System.out.print("Enter number of vertices: ");
+        int V = sc.nextInt();
+
+        // Input adjacency matrix
+        int[][] graph = new int[V][V];
+        System.out.println("Enter the adjacency matrix (0 if no edge): ");
+        for (int i = 0; i < V; i++) {
+            for (int j = 0; j < V; j++) {
+                graph[i][j] = sc.nextInt();
+            }
+        }
+
+        // Call Prim's algorithm
+        primMST(graph, V);
+    }
+
+    static void primMST(int[][] graph, int V) {
+        int[] key = new int[V];           // Store minimum weights
+        boolean[] mstSet = new boolean[V]; // Track included vertices
+        int[] parent = new int[V];        // To store MST
+
+        // Initialize all keys as infinite
+        for (int i = 0; i < V; i++) {
+            key[i] = Integer.MAX_VALUE;
+            mstSet[i] = false;
+        }
+
+        key[0] = 0;       // Start from first vertex
+        parent[0] = -1;   // First node is always the root of MST
+
+        for (int count = 0; count < V - 1; count++) {
+            int u = minKey(key, mstSet, V);
+            mstSet[u] = true;
+
+            for (int v = 0; v < V; v++) {
+                if (graph[u][v] != 0 && !mstSet[v] && graph[u][v] < key[v]) {
+                    parent[v] = u;
+                    key[v] = graph[u][v];
+                }
+            }
+        }
+
+        printMST(parent, graph, V);
+    }
+
+    static int minKey(int[] key, boolean[] mstSet, int V) {
+        int min = Integer.MAX_VALUE, minIndex = -1;
+
+        for (int v = 0; v < V; v++) {
+            if (!mstSet[v] && key[v] < min) {
+                min = key[v];
+                minIndex = v;
+            }
+        }
+
+        return minIndex;
+    }
+
+    static void printMST(int[] parent, int[][] graph, int V) {
+        int cost = 0;
+        System.out.println("Edge \tWeight");
+        for (int i = 1; i < V; i++) {
+            System.out.println((parent[i] + 1) + " - " + (i + 1) + "\t" + graph[i][parent[i]]);
+            cost += graph[i][parent[i]];
+        }
+        System.out.println("Minimum cost of MST: " + cost);
+    }
+}
+kru------------------------------------------------------------------------------------------------------------------------------------
+import java.util.*;
+
+class edge {
+    int u;
+    int v;
+    int w;
+
+    public edge(int u, int v, int w) {
+        this.u = u;
+        this.v = v;
+        this.w = w;
+    }
+
+    public String toString() {
+        return "Edge(" + u + " - " + v + ") with weight " + w;
+    }
+
+}
+
+public class kruskal {
+
+    static int[] p;
+    static int n;
+    static int e;
+    // kruskal(int v)
+    // {
+    // n=v;
+    // p= new int[n+1];
+    // for(int i=1;i<=n;i++)
+    // p[i]=-1;
+    // }
+
+    static int Find(int i) {
+        while (p[i] != -1)
+            i = p[i];
+        return i;
+    }
+
+    boolean sameSet(int i, int j) {
+        if (Find(i) == Find(j))
+            return true;
+        else
+            return false;
+
+    }
+
+    static void SimpleUnion(int i, int j) {
+        p[i] = j;
+    }
+
+
+    static void kru(edge[] edges) {
+        int min = 0;
+        int c=0;
+        int j, k;
+        for (int i = 0; i < edges.length; i++) {
+            j = edges[i].u;
+            k = edges[i].v;
+          
+            if (Find(j) != Find(k)) {
+                c++;
+                SimpleUnion(Find(j),Find(k));
+                System.out.println(edges[i]);
+                min += edges[i].w;
+
+            }
+            if(c==n-1){
+                break;
+            }
+
+        }
+        System.out.println("min cost:"+min);
+
+    }
+
+    public static void main(String args[]) {
+        System.out.println("enter no of vertices:");
+        Scanner sc = new Scanner(System.in);
+        n = sc.nextInt();
+
+        System.out.println("enter no of edge:");
+        e = sc.nextInt();
+
+        edge[] edges = new edge[e];
+
+        for (int i = 0; i < e; i++) {
+            int u, v, w;
+            System.out.println("enter the edge:"+i+" u/v/weight");
+            u = sc.nextInt();
+            v = sc.nextInt();
+            w = sc.nextInt();
+
+            edges[i] = new edge(u, v, w);
+
+        }
+
+        p = new int[n];
+        Arrays.fill(p, -1);
+
+        // edge temp;
+        // for(int i=0;i<e-1;i++)
+        // for(int j=0;j<e-1-i;j++)
+        // {
+        // if(edges[j].w>edges[j+1].w){
+        // temp=edges[j];
+        // edges[j]=edges[j+1];
+        // edges[j+1]=temp;
+        // }
+
+        // }
+
+        Arrays.sort(edges, Comparator.comparingInt(e -> e.w));
+
+
+        kru(edges);
+
+        // for (edge edge : edges) {
+        // System.out.println(edge);
+        // }
+
+        sc.close();
+
+    }
+
+}
+jobsequncing-----------------------------------------------------------------------------------------------------------------------------------------
+import java.util.*;
+
+class Job {
+    int id, deadline, profit;
+
+    Job(int id, int deadline, int profit) {
+        this.id = id;
+        this.deadline = deadline;
+        this.profit = profit;
+    }
+}
+
+public class JobSequencingCStyle {
+
+    public static void jobSequencing(Job[] jobs, int n) {
+        // Sort jobs in descending order of profit
+        Arrays.sort(jobs, (a, b) -> b.profit - a.profit);
+
+        // Find max deadline
+        int maxDeadline = 0;
+        for (Job job : jobs) {
+            if (job.deadline > maxDeadline)
+                maxDeadline = job.deadline;
+        }
+
+        // Create slots for jobs
+        int[] slots = new int[maxDeadline];
+        Arrays.fill(slots, -1);  // -1 means slot is empty
+
+        int totalProfit = 0;
+
+        for (Job job : jobs) {
+            // Try to place the job in the latest available slot before its deadline
+            for (int j = job.deadline - 1; j >= 0; j--) {
+                if (slots[j] == -1) {
+                    slots[j] = job.id;
+                    totalProfit += job.profit;
+                    break;
+                }
+            }
+        }
+
+        System.out.print("Selected job sequence: ");
+        for (int id : slots) {
+            if (id != -1)
+                System.out.print("J" + id + " ");
+        }
+        System.out.println("\nTotal Profit: " + totalProfit);
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter the number of jobs: ");
+        int n = sc.nextInt();
+
+        Job[] jobs = new Job[n];
+
+        System.out.println("Enter job details (ID Deadline Profit):");
+        for (int i = 0; i < n; i++) {
+            int id = sc.nextInt();
+            int deadline = sc.nextInt();
+            int profit = sc.nextInt();
+            jobs[i] = new Job(id, deadline, profit);
+        }
+
+        jobSequencing(jobs, n);
+
+        sc.close();
+    }
+}
+inorder-------------------------------------------------------------------------------------------------------------------------------------------------------
+import java.util.Stack;
+
+class Node {
+    int data;
+    Node left, right;
+
+    Node(int item) {
+        data = item;
+        left = right = null;
+    }
+}
+
+public class InorderIterative {
+
+    // Function for iterative inorder traversal
+    void inorderTraversal(Node root) {
+        Stack<Node> stack = new Stack<>();
+        Node current = root;
+
+        while (current != null || !stack.isEmpty()) {
+            // Reach the leftmost node of the current node
+            while (current != null) {
+                stack.push(current);
+                current = current.left;
+            }
+
+            // Current must be null at this point
+            current = stack.pop();
+            System.out.print(current.data + " ");
+
+            // Visit the right subtree
+            current = current.right;
+        }
+    }
+
+    public static void main(String[] args) {
+        InorderIterative tree = new InorderIterative();
+
+        // Creating a sample binary tree:
+        //        1
+        //       / \
+        //      2   3
+        //     / \
+        //    4   5
+
+        Node root = new Node(1);
+        root.left = new Node(2);
+        root.right = new Node(3);
+        root.left.left = new Node(4);
+        root.left.right = new Node(5);
+
+        System.out.println("Inorder traversal (non-recursive):");
+        tree.inorderTraversal(root);
+    }
+}
+nqueens--------------------------------------------------------------------------------------------------------------------------------------------------------------
+import java.util.*;
+
+public class NQueens
+{
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter no of queens");
+        int n = sc.nextInt();
+        int x[] = new int[n];
+        int k = 0;
+        nq(k,n,x);
+        sc.close();
+    }
+
+    static void nq(int k,int n,int x[])
+    {
+        for(int i=0;i<n;i++)
+        {
+            if(Place(k,i,n,x))
+            {
+                x[k] = i;
+                if(k==n-1)
+                {
+                    for(int j=0;j<n;j++)
+                    {
+                        System.out.print(x[j]+" ");
+                    }
+                    System.out.println();
+                }
+                else
+                {
+                    nq(k+1,n,x);
+                }
+            }
+        }
+    }
+
+    static boolean Place(int k,int i,int n,int x[])
+    {
+        for(int j=0;j<k;j++)
+        {
+            if(x[j]==i || (Math.abs(x[j]-i)==Math.abs(j-k)))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+sumofsub--------------------------------------------------------
+import java.util.*;
+
+public class SumOfSubsets {
+
+    static void subsets(int s,int r,int k,int w[],int m,int x[])
+    {
+        x[k] = 1;
+        if(s+w[k]==m)
+        {
+            for(int i=0;i<x.length;i++)
+               System.out.print(x[i]+" ");
+            System.out.println();
+        }
+        else if(s+w[k]+w[k+1]<=m)
+            subsets(s+w[k],r-w[k],k+1,w,m,x);
+        else if((s+r-w[k])>=m && s+w[k+1]<=m )
+        {
+            x[k] = 0;
+            subsets(s,r-w[k],k+1,w,m,x);
+        }
+    }
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter no of elements");
+        int n = sc.nextInt();
+        System.out.println("Enter max weight");
+        int m = sc.nextInt();
+        int w[] = new int[n];
+        System.out.println("Enter weight array elements");
+        int r = 0;
+        for(int i=0;i<n;i++)
+        {
+           w[i] = sc.nextInt();
+           r += w[i];
+        }
+        int x[] = new int[w.length];
+        subsets(0,r,0,w,m,x);
+        sc.close();
+    }
+}
+obst-------------------------------------------------
+import java.util.Scanner;
+
+public class OBST {
+    // Function to calculate sum of frequencies from i to j
+    static int sum(int freq[], int i, int j) {
+        int s = 0;
+        for (int k = i; k <= j; k++)
+            s += freq[k];
+        return s;
+    }
+
+    // Function to compute minimum cost of OBST
+    public static int optimalSearchTree(int key[], int freq[], int n) {
+        int cost[][] = new int[n][n];
+
+        // cost for single keys
+        for (int i = 0; i < n; i++)
+            cost[i][i] = freq[i];
+
+        // l is chain length
+        for (int l = 2; l <= n; l++) {
+            for (int i = 0; i <= n - l; i++) {
+                int j = i + l - 1;
+                cost[i][j] = Integer.MAX_VALUE;
+
+                // try making all keys in interval root
+                for (int r = i; r <= j; r++) {
+                    int c = ((r > i) ? cost[i][r - 1] : 0) +
+                            ((r < j) ? cost[r + 1][j] : 0) +
+                            sum(freq, i, j);
+                    if (c < cost[i][j])
+                        cost[i][j] = c;
+                }
+            }
+        }
+
+        return cost[0][n - 1];
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter number of keys: ");
+        int n = sc.nextInt();
+
+        int[] key = new int[n];
+        int[] freq = new int[n];
+
+        System.out.println("Enter keys in sorted order:");
+        for (int i = 0; i < n; i++)
+            key[i] = sc.nextInt();
+
+        System.out.println("Enter frequency for each key:");
+        for (int i = 0; i < n; i++)
+            freq[i] = sc.nextInt();
+
+        int minCost = optimalSearchTree(key, freq, n);
+        System.out.println("Minimum cost of OBST: " + minCost);
+    }
+}
+-----------------------------------------------------

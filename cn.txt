@@ -1,0 +1,630 @@
+Basic network commands and network configuration commands:
+C:> ping  192.168.2.4
+PING (Packet INternet Groper) command is the best way to test connectivity between two nodes/hosts. Ping use ICMP (Internet Control Message Protocol) to communicate to other devices. You can ping host name of ip address using below command.
+                                                            ping 192.168.2.4
+ping sends an ICMP ECHO_REQUEST packet to the specified host. if the host responds, you get an ICMP packet back. if there is no ICMP Reply message, you know something is wrong in the network connection.
+
+C:>ipconfig
+The ipconfig command displays information about the host/ (the computer your sitting at) computer TCP/IP configuration. This utility allows you to get the IP address information of a computer. (IP address, subnet mask, Gateway information)
+ C:>ipconfig /all 
+This command displays detailed configuration information about your  TCP/IP connection including Router, Gateway, DNS, DHCP, and type of Ethernet adapter in your system.
+
+C:>ipconfig /release
+This command allows you to drop the IP lease from the DHCP Server.
+This option terminates any active TCP/IP connections on all network adapters and releases those IP addresses for use by other applications. Ipconfig/release can be used with specific Windows connection names. In this case, the command affects only the specified connections, not all connections. 
+
+ C:>ipconfig /renew 
+Using this command will renew all your IP addresses that you are  currently (leasing) borrowing from the DHCP server. This command is a quick problem solver if you are having connection issues, but does not work if you have been configured with a static IP address.
+This option re-establishes TCP/IP connections on all network adapters. 
+Both /renew and /release options only work on clients configured for dynamic (DHCP) addressing.
+C:\>nbtstat –a
+nbtstat command displays information about NetBIOS over TCP/IP (NBT) connections for the cluster.
+This command helps solve problems with NetBIOS name resolution. (Nbt stands for NetBIOS over TCP/IP).
+
+C:\>arp  –a
+ARP is short form of address resolution protocol, It will show the IP address of your computer along with the IP address and MAC address of your router. ARP is used to find the address of a network neighbor for a given IPv4 address.  arp command manipulates or displays the kernel's IPv4 network neighbor cache. 
+C:\>hostname:
+This is the simplest of all TCP/IP commands. It simply displays the name of your computer.
+C:\>Ipconfig /renew:
+Using this command will renew all your IP addresses that you are  currently (leasing) borrowing from the DHCP server. This command is a quick problem solver if you are having connection issues, but does not work if you have been configured with a static IP address.
+
+C:\>Ipconifg /release:
+This command allows you to drop the IP lease from the DHCP Server.
+
+C:\>ipconfig /flushdns:
+This command is only needed if you’re having trouble with your networks DNS configuration. 
+If you need to clear the DNS resolver cache on the local computer, you can use the flushdns parameter.
+ipconfig /flushdns
+
+
+C:\>nbtstat –a:
+nbtstat command displays information about NetBIOS over TCP/IP (NBT) connections for the cluster.
+This command helps solve problems with NetBIOS name resolution. (Nbt stands for NetBIOS over TCP/IP).
+
+C:\netdiag:
+Netdiag is a network testing utility that performs a variety of network diagnostic tests, allowing you to pinpoint problems in your network. 
+
+C:\>netstat:
+netstat (network statistics) is a command line tool for monitoring network connections both incoming and outgoing connections as well as viewing routing tables, interface statistics etc
+Netstat displays a variety of statistics about a computers active TCP/IP  connections. This tool is most useful when you’re having trouble with TCP/IP applications such as HTTP, and FTP.
+
+C:\>nslookup:
+nslookup is a network administration command-line tool available in many computer operating systems for querying the Domain Name System (DNS) to obtain domain name or IP address mapping, or other DNS records.
+Nslookup is used for diagnosing DNS problems. If you can access a  resource by specifying an IP address.
+
+C:\>pathping:
+Pathping is unique to Window’s, and is basically a combination of the Ping and tracert commands. Pathping traces the route to the destination address then launches a 25 second test of each router along the way, gathering statistics on the rate of data loss along each hop.
+pathping provides users with the ability to locate spots that have network latency and network loss.
+
+C:\>route:
+The route command displays the computers routing table. The route command allows you to make manual entries into the network routing tables. The route command distinguishes between routes to hosts and routes to networks by interpreting the network address of the Destination variable, which can be specified either by symbolic name or numeric address.
+A typical computer, with a single network interface, connected to a LAN, with a router is fairly simple and generally doesn’t pose any network problems. But if you’re having trouble accessing other computers on your network, you can use the route command to make sure the entries in the routing table are correct.
+
+C:\>tracert:   tracert 192.168.2.1
+The tracert command is a Command Prompt command that's used to show several details about the path that a packet takes from the computer or device you're on to whatever destination you specify. You might also sometimes see the tracert command referred to as the trace route command or traceroute command.
+The tracert command displays a list of all the routers that a packet has to go through to get from the computer where tracert is run to any other computer on the internet.
+
+Bit stuffing---------------------------------------------------------------
+package week_5;
+// to run this program gopro to the directory where this file is located and run the command:
+//javac week_5/BitStuffing.java
+// java -cp . week_5.BitStuffing
+import java.util.*;
+class BitStuffing {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter a binary string: ");
+        String input = scanner.nextLine();
+        
+        String stuffed = stuffBits(input);
+        System.out.println("Bit-stuffed string: " + stuffed);
+        
+        String destuffed = destuffBits(stuffed);
+        System.out.println("Destuffed string: " + destuffed);
+        
+        scanner.close();
+    }
+
+    public static String stuffBits(String input) {
+        StringBuilder stuffed = new StringBuilder();
+        int count = 0;
+
+        for (char bit : input.toCharArray()) {
+            if (bit == '1') {
+                count++;
+                if (count == 5) {
+                    stuffed.append(bit).append('0'); // Stuff a '0' after five consecutive '1's
+                    count = 0; // Reset count after stuffing
+                } else {
+                    stuffed.append(bit);
+                }
+            } else {
+                stuffed.append(bit);
+                count = 0; // Reset count on '0'
+            }
+        }
+        return stuffed.toString();
+    }
+
+    public static String destuffBits(String input) {
+        StringBuilder destuffed = new StringBuilder();
+        int count = 0;
+
+        for (int i = 0; i < input.length(); i++) {
+            char bit = input.charAt(i);
+            if (bit == '1') {
+                count++;
+                destuffed.append(bit);
+            } else if (bit == '0' && count == 5) {
+                // Skip this '0' as it is a stuffed bit
+                count = 0; // Reset count after skipping
+            } else {
+                destuffed.append(bit);
+                count = 0; // Reset count on '0'
+            }
+        }
+        return destuffed.toString();
+    }
+}
+
+
+Byte stuffing--------------------------------------------------------
+package week_5;
+// to run this code use command: 
+//javac week_5/ByteStuffing.java 
+//java -cp . week_5.ByteStuffing
+
+import java.util.*;
+
+public class ByteStuffing {
+    public static void main(String args[]) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println("Enter flag:");
+        String flag = sc.nextLine();
+
+        System.out.println("Enter data:");
+        String data = sc.nextLine();
+
+        String stuffed = byteStuff(data, flag);
+        String destuffed = byteDestuff(stuffed, flag);
+
+        System.out.println("Stuffed data is: " + stuffed);
+        System.out.println("Destuffed data is: " + destuffed);
+    }
+
+    public static String byteStuff(String data, String flag) {
+        StringBuilder res = new StringBuilder();
+        int i = 0;
+
+        while (i < data.length()) {
+            if (data.startsWith("esc", i)) {
+                res.append("escesc");
+                i += 3;
+            } else if (data.startsWith(flag, i)) {
+                res.append("esc").append(flag);
+                i += flag.length();
+            } else {
+                res.append(data.charAt(i));
+                i++;
+            }
+        }
+
+        return flag + res.toString() + flag;
+    }
+
+    public static String byteDestuff(String stuffed, String flag) {
+        if (!stuffed.startsWith(flag) || !stuffed.endsWith(flag)) {
+            return "Invalid frame";
+        }
+
+        // Remove starting and ending flags
+        String data = stuffed.substring(flag.length(), stuffed.length() - flag.length());
+        StringBuilder res = new StringBuilder();
+        int i = 0;
+
+        while (i < data.length()) {
+            if (data.startsWith("escesc", i)) {
+                res.append("esc");
+                i += 6;
+            } else if (data.startsWith("esc" + flag, i)) {
+                res.append(flag);
+                i += 3 + flag.length();
+            } else {
+                res.append(data.charAt(i));
+                i++;
+            }
+        }
+
+        return res.toString();
+    }
+}  
+
+stop and wait protocol----------------------------------------------------------------
+sender------>>>>>>>>>
+package week_5.stop_wait;
+//to be run after starting receiver.java
+//to run this enter java -cp "D:\3_1_CN_programming" week_5.stop_wait.sender
+
+import java.io.*;
+import java.net.*;
+import java.util.Scanner;
+
+public class sender {
+    public static void main(String[] args) throws IOException {
+        try (Socket socket = new Socket("localhost", 5000);
+             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+             Scanner sc = new Scanner(System.in)) {
+
+            System.out.print("Enter number of frames to send: ");
+            int n = sc.nextInt();
+            int seq = 0;
+
+            for (int i = 0; i < n; ) {
+                System.out.println("Sender: Sending Frame " + seq);
+                out.writeBytes(seq + "\n");
+
+                int ack = Integer.parseInt(in.readLine());
+                if (ack == (1 - seq)) {
+                    System.out.println("Sender: ACK " + ack + " received");
+                    seq = 1 - seq;
+                    i++;
+                } else {
+                    System.out.println("Sender: Wrong ACK, resending Frame " + seq);
+                }
+            }
+
+            out.writeBytes("exit\n");
+            System.out.println("Sender: Transmission complete");
+        }
+    }
+}
+
+receiver----->>>>>>>>>>
+package week_5.stop_wait;
+//to be run before starting sender.java
+//to run this enter java -cp "D:\3_1_CN_programming" week_5.stop_wait.receiver
+
+import java.io.*;
+import java.net.*;
+
+public class receiver {
+    public static void main(String[] args) throws IOException {
+        try (ServerSocket serverSocket = new ServerSocket(5000);
+             Socket socket = serverSocket.accept();
+             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+             DataOutputStream out = new DataOutputStream(socket.getOutputStream())) {
+
+            System.out.println("Receiver: Connected to sender");
+            int expected = 0;
+
+            while (true) {
+                String data = in.readLine();
+                if (data == null || data.equals("exit")) break;
+
+                int frame = Integer.parseInt(data);
+                if (frame == expected) {
+                    System.out.println("Receiver: Frame " + frame + " received");
+                    out.writeBytes((1 - frame) + "\n");
+                    expected = 1 - expected;
+                } else {
+                    System.out.println("Receiver: Duplicate Frame " + frame + " discarded");
+                    out.writeBytes((1 - expected) + "\n");
+                }
+            }
+
+            System.out.println("Receiver: Connection closed");
+        }
+    }
+}
+
+
+goback - N protocol-------------------------------------------------------
+sender----------------------->>>>>>>>
+package week_5.go_back_n;
+//to run this start the receiver first then the sender
+//javac week_5\go_back_n\sender.java
+//java -cp "D:\3_1_CN_programming" week_5.go_back_n.sender
+
+import java.io.*;
+import java.net.*;
+
+public class sender {
+    static final int m = 3, SEQ_SIZE = 1 << m, WIN = SEQ_SIZE - 1, TOTAL = 12, TIMEOUT = 3000;
+
+    public static void main(String[] args) throws Exception {
+        try (Socket s = new Socket("localhost", 5000);
+             DataOutputStream out = new DataOutputStream(s.getOutputStream());
+             DataInputStream in = new DataInputStream(s.getInputStream())) {
+
+            int base = 0, next = 0;
+            long timer = System.currentTimeMillis();
+
+            System.out.println("Sender started");
+            printWin("Sender Window", base);
+
+            while (base < TOTAL) {
+                while (next < base + WIN && next < TOTAL) {
+                    int seq = next % SEQ_SIZE;
+                    System.out.println("Sender: Sending " + seq);
+                    out.writeInt(seq);
+                    if (base == next) timer = System.currentTimeMillis();
+                    next++;
+                }
+
+                if (in.available() > 0) {
+                    int ack = in.readInt();
+                    base = (ack >= base) ? ack : ack + SEQ_SIZE;
+                    printWin("Sender Window", base % SEQ_SIZE);
+                    timer = System.currentTimeMillis();
+                } else if (System.currentTimeMillis() - timer > TIMEOUT) {
+                    System.out.println("Sender: Timeout, resending from " + (base % SEQ_SIZE));
+                    next = base;
+                    timer = System.currentTimeMillis();
+                    printWin("Sender Window", base % SEQ_SIZE);
+                }
+                Thread.sleep(100);
+            }
+            System.out.println("Sender finished");
+        }
+    }
+
+    static void printWin(String tag, int start) {
+        System.out.print(tag + ": ");
+        for (int i = 0; i < WIN; i++) System.out.print(((start + i) % SEQ_SIZE) + " ");
+        System.out.println();
+    }
+}
+
+receiver-------------------------------------->>>>>>>
+package week_5.go_back_n;
+//to run this start the receiver first then the sender
+//javac week_5\go_back_n\receiver.java
+//java -cp "D:\3_1_CN_programming" week_5.go_back_n.receiver
+
+import java.io.*;
+import java.net.*;
+
+public class receiver {
+    static final int m = 3, SEQ_SIZE = 1 << m, WIN = SEQ_SIZE - 1, TOTAL = 12;
+
+    public static void main(String[] args) throws Exception {
+        try (ServerSocket ss = new ServerSocket(5000);
+             Socket s = ss.accept();
+             DataInputStream in = new DataInputStream(s.getInputStream());
+             DataOutputStream out = new DataOutputStream(s.getOutputStream())) {
+
+            int expected = 0, count = 0;
+            System.out.println("Receiver started");
+            printWin("Receiver Window", expected);
+
+            while (count < TOTAL) {
+                int frame = in.readInt();
+                if (frame == expected) {
+                    System.out.println("Receiver: Accepted " + frame);
+                    if (frame == 4) Thread.sleep(3000); // delay ACK 4
+                    expected = (expected + 1) % SEQ_SIZE;
+                    count++;
+                } else {
+                    System.out.println("Receiver: Discarded " + frame);
+                }
+                out.writeInt(expected);
+                System.out.println("Receiver: Sent ACK " + expected);
+                printWin("Receiver Window", expected);
+            }
+            System.out.println("Receiver finished");
+        }
+    }
+
+    static void printWin(String tag, int start) {
+        System.out.print(tag + ": ");
+        for (int i = 0; i < WIN; i++) System.out.print(((start + i) % SEQ_SIZE) + " ");
+        System.out.println();
+    }
+}
+
+
+crc----------------------------------------------------------
+package week_6;
+//to compile: javac week_6/CRC_BinaryDivision_Min.java
+//to run: java -cp . week_6.CRC_BinaryDivision_Min
+
+import java.util.*;
+
+public class CRC_BinaryDivision_Min {
+    static String rem(String divd, String gen) {
+        int g = gen.length(); char[] d = divd.toCharArray(), v = gen.toCharArray();
+        for (int i = 0; i <= d.length - g; i++)
+            if (d[i]=='1') for (int j=0;j<g;j++) d[i+j] = (d[i+j]==v[j])?'0':'1';
+        return new String(d, d.length - (g - 1), g - 1);
+    }
+    static boolean bits(String s){ return s!=null && !s.isEmpty() && s.chars().allMatch(c->c=='0'||c=='1'); }
+    static boolean zero(String s){ for(char c:s.toCharArray()) if(c!='0') return false; return true; }
+
+    public static void main(String[] a){
+        Scanner sc=new Scanner(System.in);
+        System.out.println("=== CRC (Binary Division) ===");
+        System.out.print("DATA (e.g. 100100): "); String data=sc.nextLine().trim();
+        System.out.print("GEN  (e.g. 1101)  : "); String gen=sc.nextLine().trim();
+
+        if(!bits(data)||!bits(gen)||gen.length()<2||gen.charAt(0)!='1'||gen.charAt(gen.length()-1)!='1'){
+            System.out.println("Invalid input: data/gen must be binary; gen len>=2; starts & ends with 1."); return;
+        }
+
+        String pad = data + "0".repeat(gen.length()-1);
+        String r = rem(pad, gen);
+        String code = data + r;
+
+        System.out.println("\n[SENDER]");
+        System.out.println("Data      : "+data);
+        System.out.println("Generator : "+gen);
+        System.out.println("Remainder : "+r);
+        System.out.println("Codeword  : "+code);
+
+        System.out.print("\nFlip a bit? (y/n): ");
+        if(sc.nextLine().trim().toLowerCase().startsWith("y")){
+            System.out.print("Index to flip (0.."+(code.length()-1)+"): ");
+            try{
+                int i=Integer.parseInt(sc.nextLine().trim());
+                if(0<=i && i<code.length()){
+                    char[] c=code.toCharArray(); c[i]=(c[i]=='0')?'1':'0'; code=new String(c);
+                    System.out.println("Flipped at "+i+": "+code);
+                } else System.out.println("Invalid index. No flip.");
+            }catch(Exception e){ System.out.println("No flip."); }
+        }
+
+        System.out.println("\n[RECEIVER]");
+        String syn = rem(code, gen);
+        System.out.println("Received  : "+code);
+        System.out.println("Syndrome  : "+syn);
+        System.out.println(zero(syn) ? "Result: NO ERROR. ACCEPTED." : "Result: ERROR! REJECTED.");
+    }
+}
+
+csma/ca----------------------------------------------------------------------------
+//CSMA/CA PROGRAM
+//CLIENT 1 (Sender Side)
+import java.io.*;
+import java.net.*;
+
+class client {
+    public static void main(String[] args) {
+        try {
+            System.out.println("============ Client 1 (Sender) ==============");
+            client cli = new client();
+            int R = 0;
+            boolean bln = false;
+
+            for (int k = 1; k <= 15; k++) {
+                System.out.println("Attempt : " + k);
+
+                // keep checking channel
+                while (true) {
+                    if (cli.isidle()) {
+                        System.out.println("\nChannel idle");
+                        System.out.println("Wait IFS time 5000ms");
+                        Thread.sleep(5000);
+
+                        // check again
+                        if (cli.isidle()) {
+                            System.out.println("Still idle");
+
+                            // choose random number
+                            R = (int)(Math.pow(2, k) - 1); // fixed backoff
+                            System.out.println("Selected Random number: " + R);
+                            int waitTime = R * 6000;
+                            System.out.println("Waiting for R slot time: " + waitTime + "ms");
+                            Thread.sleep(waitTime);
+
+                            // send frame
+                            System.out.println("Message sent - Hello world");
+
+                            // wait for ack
+                            System.out.println("Wait for timeout: 10000ms");
+                            Thread.sleep(10000);
+
+                            if (cli.isidle()) {
+                                System.out.println("Ack received ✅");
+                                bln = true;
+                                break;
+                            } else {
+                                System.out.println("Ack not received ❌");
+                                break;
+                            }
+                        } else {
+                            System.out.println("Busy, checking again...");
+                        }
+                    }
+                }
+
+                if (bln) break;
+            }
+        } catch (InterruptedException e) {
+            System.out.println(e);
+        }
+    }
+
+    boolean isidle() {
+        try {
+            Socket soc = new Socket("localhost", 5000); // fixed port
+            soc.close();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+}
+
+
+Receiver side: 
+//CSMA/CA
+//CLIENT 2
+import java.io.*;
+import java.net.*;
+
+class server {
+    public static void main(String[] args) {
+        try {
+            System.out.println("============ Client 2 (Server) ==============");
+            ServerSocket ss = new ServerSocket(5000); // fixed port
+            while (true) {
+                System.out.println("Waiting for connection...");
+                Socket con = ss.accept();
+                System.out.println("Connected from " + con.getInetAddress());
+                con.close();
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+}
+
+
+csma/cd--------------------------------------------------------------------
+//CSMA/CD PROGRAM
+//CLEINT:(Sender side)
+import java.io.*;
+import java.net.*;
+public class client1
+{
+public static void main(String[] args)
+{
+try
+{
+System.out.println("============ Client 1 ===============");
+client1 cli = new client1();
+int Tp = 2000;
+int R = 0;
+int Tb = 0;
+for(int i=1; i<=15;i++)
+{
+System.out.println("attempt : "+i);
+if(cli.send() == "sent")
+{
+break;
+}
+else
+{
+R = 2^i-1;
+System.out.println("Selected Random number :"+R);
+Tb = R*Tp;
+System.out.println("waiting for next attempt with back time (in seconds): "+Tb);
+Thread.sleep(Tb);
+}
+}
+}
+catch (InterruptedException e)
+{
+System.out.println(e);
+}
+}
+String send()
+{
+String str=null;
+String msg = "CNLAB";
+try
+{
+Socket soc = new Socket("localhost",1372);
+ObjectOutputStream out = new ObjectOutputStream(soc.getOutputStream());
+
+out.writeObject(msg);
+System.out.println("Message sent : "+msg);
+str = "sent";
+}
+
+catch(Exception e)
+{
+str = "collision occured";
+System.out.println("Message sent : "+msg);
+}
+return str;
+}
+}
+//CSMA/CD PROGRAM
+//SERVER:
+import java.io.*;
+import java.net.*;
+public class Server
+{
+public static void main(String[] args)
+{
+try
+{
+System.out.println("============ Client 2 ===============");
+ServerSocket ss = new ServerSocket(1372);
+System.out.println("Waiting for connection");
+Socket con = ss.accept();
+System.out.println("Connected");
+ObjectInputStream in = new ObjectInputStream(con.getInputStream());
+System.out.println((String)in.readObject());
+in.close();
+ss.close();
+}
+catch(Exception e)
+{
+System.out.println(e);
+}
+}
+}
+
