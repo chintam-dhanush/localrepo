@@ -16,7 +16,6 @@ y_pred = knn.predict(X_test)
 print(confusion_matrix(y_test, y_pred))
 print("Accuracy:", accuracy_score(y_test, y_pred))
 print("Wrong Prediction:", 1 - accuracy_score(y_test, y_pred))
-print(classification_report(y_test, y_pred))
 
 sample = [[5.1, 3.5, 7.4, 0.2]]
 pred = knn.predict(sample)
