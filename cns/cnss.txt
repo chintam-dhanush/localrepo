@@ -1,0 +1,606 @@
+
+
+project
+
+ECC Secure Messaging App + Elliptic Curve Visualizer
+
+
+
+
+import java.util.Scanner;
+public class HillCipher {
+ private static int[ ][ ] key;
+ public static void main(String[] args) {
+ Scanner sc = new Scanner(System.in);
+ key = new int[2][2];
+ // Input the 2x2 key matrix
+ System.out.println("Enter key matrix (2x2):");
+ for (int i = 0; i < 2; i++) // Loop to fill the key matrix
+ for (int j = 0; j < 2; j++)
+ key[i][j] = sc.nextInt();
+ // Input plaintext and format it
+ System.out.print("Enter plaintext: ");
+ sc.nextLine();
+ String plaintext = sc.nextLine().toUpperCase().replaceAll("[^A-Z]", ""); // Remove non-alphabet characters
+ while (plaintext.length() % 2 != 0) plaintext += 'X'; // Pad plaintext if its length is odd
+ // Encrypt plaintext
+ String ciphertext = encrypt(plaintext, key);
+ System.out.println("Ciphertext: " + ciphertext);
+ }
+ // Method to encrypt the text using the given matrix
+ private static String encrypt(String text, int[][] matrix) {
+ StringBuilder result = new StringBuilder();
+ for (int i = 0; i < text.length(); i += 2) { // Process the text in blocks of 2 characters
+ int[] vec = new int[2];
+ for (int j = 0; j < 2; j++)
+ vec[j] = text.charAt(i + j) - 'A'; // Convert each character to a corresponding integer
+ int[] transformed = multiply(matrix, vec); // Multiply with the key matrix
+ for (int value : transformed)
+ result.append((char) ('A' + (value % 26 + 26) % 26)); // Convert the result to characters and append
+ }
+ return result.toString();
+ }
+ // Method to multiply a matrix with a vector
+ private static int[] multiply(int[][] matrix, int[] vec) {
+ int[] result = new int[2];
+ for (int i = 0; i < 2; i++) // Multiply row of matrix with the vector
+ for (int j = 0; j < 2; j++)
+ result[i] += matrix[i][j] * vec[j]; // Sum the products for each element in the result
+ return result;
+ }
+}
+
+
+------------------------------------------------------------------------------------------------------------------
+week 2
+
+import java.util.*;
+
+public class ch {
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        // KEY
+        String ustr = sc.nextLine().toLowerCase().replaceAll("j", "i");
+
+        char km[][] = new char[5][5];
+        HashSet<Character> h = new HashSet<>();
+
+        int idx = 0;
+
+        // Fill matrix using key
+        for (char c : ustr.toCharArray()) {
+            if (c < 'a' || c > 'z') continue;
+
+            if (h.add(c)) {
+                km[idx / 5][idx % 5] = c;
+                idx++;
+            }
+        }
+
+        // Fill remaining letters
+        for (char ch = 'a'; ch <= 'z'; ch++) {
+            if (ch == 'j') continue;
+
+            if (h.add(ch)) {
+                km[idx / 5][idx % 5] = ch;
+                idx++;
+            }
+        }
+
+        // Show matrix
+        for (char[] row : km)
+            System.out.println(Arrays.toString(row));
+
+        // TEXT
+        String text = sc.nextLine().toLowerCase()
+                .replaceAll("j", "i")
+                .replaceAll("[^a-z]", "");
+
+        List<String> pairs = makePairs(text);
+
+        System.out.println("Pairs: " + pairs);
+
+        // ENCRYPT
+        String enc = encrypt(km, pairs);
+        System.out.println("Encrypted: " + enc);
+
+        // DECRYPT
+        String dec = decrypt(km, enc);
+        System.out.println("Decrypted: " + dec);
+    }
+
+    // ---------------------------------------------------
+
+    static List<String> makePairs(String text) {
+        List<String> res = new ArrayList<>();
+
+        for (int i = 0; i < text.length(); i++) {
+
+            char a = text.charAt(i);
+            char b;
+
+            if (i + 1 < text.length() && a != text.charAt(i + 1)) {
+                b = text.charAt(i + 1);
+                i++;
+            } else {
+                b = 'x';
+            }
+
+            res.add("" + a + b);
+        }
+
+        return res;
+    }
+
+    // ---------------------------------------------------
+
+    static String encrypt(char km[][], List<String> pairs) {
+
+        StringBuilder sb = new StringBuilder();
+
+        for (String p : pairs) {
+
+            char a = p.charAt(0);
+            char b = p.charAt(1);
+
+            int[] posA = sear(km, a);
+            int[] posB = sear(km, b);
+
+            int r1 = posA[0], c1 = posA[1];
+            int r2 = posB[0], c2 = posB[1];
+
+            // Same row
+            if (r1 == r2) {
+                sb.append(km[r1][(c1 + 1) % 5]);
+                sb.append(km[r2][(c2 + 1) % 5]);
+            }
+
+            // Same column
+            else if (c1 == c2) {
+                sb.append(km[(r1 + 1) % 5][c1]);
+                sb.append(km[(r2 + 1) % 5][c2]);
+            }
+
+            // Rectangle rule
+            else {
+                sb.append(km[r1][c2]);
+                sb.append(km[r2][c1]);
+            }
+        }
+
+        return sb.toString();
+    }
+
+    // ---------------------------------------------------
+
+    static String decrypt(char km[][], String enc) {
+
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < enc.length(); i += 2) {
+
+            char a = enc.charAt(i);
+            char b = enc.charAt(i + 1);
+
+            int[] posA = sear(km, a);
+            int[] posB = sear(km, b);
+
+            int r1 = posA[0], c1 = posA[1];
+            int r2 = posB[0], c2 = posB[1];
+
+            // Same row
+            if (r1 == r2) {
+                sb.append(km[r1][(c1 + 4) % 5]); // move LEFT
+                sb.append(km[r2][(c2 + 4) % 5]);
+            }
+
+            // Same column
+            else if (c1 == c2) {
+                sb.append(km[(r1 + 4) % 5][c1]); // move UP
+                sb.append(km[(r2 + 4) % 5][c2]);
+            }
+
+            // Rectangle rule
+            else {
+                sb.append(km[r1][c2]);
+                sb.append(km[r2][c1]);
+            }
+        }
+
+        return sb.toString();
+    }
+
+    // ---------------------------------------------------
+
+    static int[] sear(char km[][], char c) {
+
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                if (km[i][j] == c)
+                    return new int[]{i, j};
+            }
+        }
+
+        return null;
+    }
+}
+
+
+-------------------------------------------------------------------------------------------------------------------
+week 3
+
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.util.Base64;
+
+public class DESAlgorithm {
+
+
+    private static SecretKey genKey() throws Exception {
+        KeyGenerator kg = KeyGenerator.getInstance("DES");
+        kg.init(56); // DES uses a 56-bit key
+        return kg.generateKey();
+    }
+
+
+    private static String enc(String pt, SecretKey k) throws Exception {
+        Cipher c = Cipher.getInstance("DES");
+        c.init(Cipher.ENCRYPT_MODE, k);
+        byte[] encBytes = c.doFinal(pt.getBytes());
+        return Base64.getEncoder().encodeToString(encBytes);
+    }
+
+    private static String dec(String et, SecretKey k) throws Exception {
+        Cipher c = Cipher.getInstance("DES");
+        c.init(Cipher.DECRYPT_MODE, k);
+        byte[] decBytes = Base64.getDecoder().decode(et);
+        byte[] ptBytes = c.doFinal(decBytes);
+        return new String(ptBytes);
+    }
+
+    public static void main(String[] args) {
+        try {
+            // Generate DES key
+            SecretKey k = genKey();
+
+            // Print key in Base64 format
+            System.out.println("Key: " + Base64.getEncoder().encodeToString(k.getEncoded()));
+
+            // Sample plaintext
+            String pt = "Hello, World!";
+            System.out.println("Plaintext: " + pt);
+
+            // Encrypt plaintext
+            String et = enc(pt, k);
+            System.out.println("Encrypted: " + et);
+
+            // Decrypt ciphertext
+            String dt = dec(et, k);
+            System.out.println("Decrypted: " + dt);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+------------------------------------------------------------------------------------------------------------------
+week 4
+
+import java.security.*;
+import javax.crypto.Cipher;
+import java.util.Base64;
+import java.util.Scanner;
+
+public class RSAAlgorithm {
+
+    // Method to generate RSA key pair (public and private keys)
+    private static KeyPair genKeys() throws Exception {
+        KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+        keyGen.initialize(512); // Key size set to 512 bits for security
+        return keyGen.generateKeyPair(); // Generate and return key pair
+    }
+
+    // Method to encrypt plaintext string using the public key
+    private static String enc(String pt, PublicKey pubKey) throws Exception {
+        Cipher cipher = Cipher.getInstance("RSA"); // Get RSA cipher instance
+        cipher.init(Cipher.ENCRYPT_MODE, pubKey); // Initialize cipher for encryption
+        byte[] encBytes = cipher.doFinal(pt.getBytes()); // Encrypt plaintext
+        return Base64.getEncoder().encodeToString(encBytes); // Return Base64 encoded ciphertext
+    }
+
+    // Method to decrypt ciphertext string using the private key
+    private static String dec(String et, PrivateKey privKey) throws Exception {
+        Cipher cipher = Cipher.getInstance("RSA"); // Get RSA cipher instance
+        cipher.init(Cipher.DECRYPT_MODE, privKey); // Initialize cipher for decryption
+        byte[] decBytes = Base64.getDecoder().decode(et); // Decode Base64 ciphertext
+        byte[] ptBytes = cipher.doFinal(decBytes); // Decrypt ciphertext
+        return new String(ptBytes); // Return decrypted plaintext
+    }
+
+    public static void main(String[] args) {
+        try (Scanner scanner = new Scanner(System.in)) {
+            // Generate RSA key pair
+            KeyPair keyPair = genKeys();
+            PublicKey pubKey = keyPair.getPublic();
+            PrivateKey privKey = keyPair.getPrivate();
+
+            // Display keys in Base64 format
+            System.out.println("Public Key: " + Base64.getEncoder().encodeToString(pubKey.getEncoded()));
+            System.out.println("Private Key: " + Base64.getEncoder().encodeToString(privKey.getEncoded()));
+
+            // Take plaintext input from user
+            System.out.print("Enter plaintext message: ");
+            String pt = scanner.nextLine();
+
+            // Encrypt the plaintext message
+            String et = enc(pt, pubKey);
+            System.out.println("Encrypted: " + et);
+
+            // Decrypt the ciphertext message
+            String dt = dec(et, privKey);
+            System.out.println("Decrypted: " + dt);
+
+        } catch (Exception e) {
+            e.printStackTrace(); // Print exception details in case of an error
+        }
+    }
+}
+
+
+
+--------------------------------------------------------------------------------------------------------------------
+week 5
+
+import java.math.BigInteger;
+import java.security.SecureRandom;
+import java.util.Scanner;
+public class DiffieHellmanKeyExchange {
+ public static void main(String[] args) {
+ Scanner scanner = new Scanner(System.in);
+ SecureRandom random = new SecureRandom();
+ // Step 1: Publicly known values
+ System.out.print("Enter a prime number (p): ");
+ BigInteger p = scanner.nextBigInteger();
+ System.out.print("Enter a primitive root modulo p (g): ");
+ BigInteger g = scanner.nextBigInteger();
+ // Step 2: Alice selects a private key a
+ BigInteger a = new BigInteger(1024, random);
+ BigInteger A = g.modPow(a, p);
+ // Step 3: Bob selects a private key b
+ BigInteger b = new BigInteger(1024, random);
+ BigInteger B = g.modPow(b, p);
+ // Exchange public keys A and B
+ System.out.println("Alice's Public Key (A): " + A);
+ System.out.println("Bob's Public Key (B): " + B);
+ // Step 4: Compute shared secret keys
+ BigInteger secretKeyAlice = B.modPow(a, p);
+ BigInteger secretKeyBob = A.modPow(b, p);
+ // Both keys should be the same
+ System.out.println("Alice's Secret Key: " + secretKeyAlice);
+ System.out.println("Bob's Secret Key: " + secretKeyBob);
+ if (secretKeyAlice.equals(secretKeyBob)) {
+ System.out.println("Key exchange successful. Shared secret key is established.");
+ } else {
+ System.out.println("Key exchange failed.");
+ }
+ scanner.close(); }
+}
+
+
+
+-------------------------------------------------------------------------------------------------------------------
+
+week 6
+
+import org.myorg;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
+public class mac{
+    public static void main(String[] args){
+        String msg="this is secret";
+        String secretkey="123";
+        try{
+            byte[] hmac=generateMac(msg,secretKey);
+            String hmacBase64=Base64.getEncoder().encodeToString(hmac);
+            System.out.println("HMAC: "+hmacBase64);
+        }catch(NoSuchAlgorithmException | InvalidKeyException e){
+            e.printStackTrace();
+        }
+    }
+    public static byte[] generateMac(String msg,String secretKey) throws NoSuchAlgorithmException,InvalidKeyException{
+        Mac mac=Mac.getInstance("HmacSHA256");
+        SecretKeySpec secretKeySpec=new SecretKeySpec(secretKey.getBytes(),"HmacSHA256");
+        mac.init(secretKeySpec);
+        return mac.doFinal(msg.getBytes());
+    }
+}
+
+
+--------------------------------------------------------------------------------------------------------------
+
+week 7
+
+package exp4;
+
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
+public class sha {
+
+    public static String h1(String input) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-1");
+
+            byte[] messageDigest = md.digest(input.getBytes());
+
+            BigInteger no = new BigInteger(1, messageDigest);
+
+            String hashtext = no.toString(16);
+
+            while (hashtext.length() < 40) {
+                hashtext = "0" + hashtext;
+            }
+
+            return hashtext;
+        } 
+        catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void main(String args[]) throws NoSuchAlgorithmException {
+
+        System.out.println("HashCode Generated by SHA-1 for:");
+
+        String s1 = "computer networks";
+        System.out.println("\n" + s1 + " : " + h1(s1));
+
+        String s2 = "hello world";
+        System.out.println("\n" + s2 + " : " + h1(s2));
+    }
+}
+
+
+-------------------------------------------------------------------------------------------------
+import java.security.MessageDigest;         
+import java.security.NoSuchAlgorithmException;
+import java.util.Scanner;
+ public class MD5Hash {
+    public static String generateMD5(String input) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5"); 
+            byte[] hashBytes = md.digest(input.getBytes()); 
+            
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hashBytes) {
+                hexString.append(String.format("%02x", b));
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("MD5 algorithm not found", e);
+        }
+    }
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Enter input1 string for MD5: ");
+        String input1 = sc.nextLine();
+        
+        System.out.println("MD5 Hash for input1: " + generateMD5(input1));
+        System.out.print("Enter input2 with small change in the string : ");
+        String input2 = sc.nextLine();
+        
+        System.out.println("MD5 Hash for input2: " + generateMD5(input2));
+
+        sc.close();
+    }
+}
+
+___________________________________________________________________________________________________________
+week 8
+import java.io.*;
+
+import java.security.*;
+
+public class elg
+
+{
+
+    public static void main(String args[])
+
+    {
+
+        try
+
+        {
+
+            /* Generate a key pair */
+
+            KeyPairGenerator keyGen = KeyPairGenerator.getInstance("DSA", "SUN");
+
+            SecureRandom random = SecureRandom.getInstance("SHA1PRNG", "SUN");
+
+            keyGen.initialize(1024, random);
+
+            KeyPair pair = keyGen.generateKeyPair();
+
+            PrivateKey priv = pair.getPrivate();
+
+            PublicKey pub = pair.getPublic();
+
+            /* Create a Signature object and initialize it with the private key */
+
+            Signature dsa = Signature.getInstance("SHA1withDSA", "SUN");
+
+            dsa.initSign(priv);
+
+            /* Update and sign the data */
+
+            FileInputStream fis = new FileInputStream("C:\\Users\\gcet\\Desktop\\23R11A66G0\\hey.txt");
+
+            BufferedInputStream bufin = new BufferedInputStream(fis);
+
+            byte[] buffer = new byte[1024];
+
+            int len;
+
+            while (bufin.available() != 0)
+
+            {
+
+                len = bufin.read(buffer);
+
+                dsa.update(buffer, 0, len);
+
+            }
+            ;
+
+            bufin.close();
+
+            /*
+             * Now that all the data to be signed has been read in,
+             * 
+             * generate a signature for it
+             */
+
+            byte[] realSig = dsa.sign();
+
+            /* Save the signature in a file */
+
+            FileOutputStream sigfos = new FileOutputStream("C:\\Users\\gcet\\Desktop\\23R11A66G0\\hey1.txt");
+
+            sigfos.write(realSig);
+
+            sigfos.close();
+
+            /* Save the public key in a file */
+
+            byte[] key = pub.getEncoded();
+
+            FileOutputStream keyfos = new FileOutputStream("C:\\Users\\gcet\\Desktop\\23R11A66G0\\hey2.txt");
+
+            keyfos.write(key);
+
+            keyfos.close();
+
+        }
+
+        catch (Exception e)
+
+        {
+
+            System.out.println("Caught exception " + e.toString());
+
+        }
+
+    }
+
+}
