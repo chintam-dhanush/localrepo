@@ -1,4 +1,3 @@
-
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
@@ -32,21 +31,17 @@ public class cns3 {
 
     public static void main(String[] args) {
         try {
-            // Generate DES key
+
             SecretKey k = genKey();
 
-            // Print key in Base64 format
             System.out.println("Key: " + Base64.getEncoder().encodeToString(k.getEncoded()));
-
-            // Sample plaintext
+            
             String pt = "Hello, World!";
             System.out.println("Plaintext: " + pt);
 
-            // Encrypt plaintext
             String et = enc(pt, k);
             System.out.println("Encrypted: " + et);
 
-            // Decrypt ciphertext
             String dt = dec(et, k);
             System.out.println("Decrypted: " + dt);
 

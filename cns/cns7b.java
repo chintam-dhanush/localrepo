@@ -7,17 +7,14 @@ public class cns7b {
     public static String h1(String input) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-1");
-
             byte[] messageDigest = md.digest(input.getBytes());
 
             BigInteger no = new BigInteger(1, messageDigest);
-
             String hashtext = no.toString(16);
 
             while (hashtext.length() < 40) {
                 hashtext = "0" + hashtext;
             }
-
             return hashtext;
         } 
         catch (NoSuchAlgorithmException e) {

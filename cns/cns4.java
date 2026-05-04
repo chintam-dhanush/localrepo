@@ -3,7 +3,7 @@ import javax.crypto.Cipher;
 import java.util.Base64;
 import java.util.Scanner;
 
-public class cns4 {
+public class cns4  {
 
     private static KeyPair genKeys() throws Exception {
         KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
