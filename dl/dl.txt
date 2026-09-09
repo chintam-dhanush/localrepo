@@ -1,0 +1,13 @@
+import sys
+print(sys.version)
+
+
+!pip show tensorflow protobuf
+
+!pip install --upgrade protobuf==6.31.1
+
+
+!pip install tensorflow
+
+
+
