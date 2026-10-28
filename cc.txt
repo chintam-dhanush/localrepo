@@ -1,0 +1,1290 @@
+hey
+
+Week 4:
+a:
+Step 1: Sign in to AWS
+Open the official AWS Management Console and sign in.
+Step 2: Open Amazon SNS
+1.	Search for SNS in the AWS Console search bar.
+2.	Open Amazon Simple Notification Service.
+3.	Select the AWS Region you want to use, such as Asia Pacific (Mumbai), if available for your account.
+Keep the same Region throughout the experiment.
+Step 3: Create an SNS topic
+1.	Open Topics.
+2.	Click Create topic.
+3.	Select Standard.
+4.	Enter the name MyExamTopic.
+5.	Leave the other settings at their defaults.
+6.	Click Create topic.
+Expected result: AWS creates the topic and displays its details, including the Topic ARN.
+Step 4: Subscribe your email address
+1.	Open Subscriptions.
+2.	Click Create subscription.
+3.	Select the ARN of MyExamTopic.
+4.	Set Protocol to Email.
+5.	Enter an email address you can access.
+6.	Click Create subscription.
+Step 5: Confirm the subscription
+Open your email inbox.
+1.	Find the subscription confirmation email from AWS Notifications.
+2.	Open it.
+3.	Click Confirm subscription.
+Return to the SNS Console and check that the subscription status is confirmed.
+An email subscription must be confirmed before it can receive notifications. AWS Documentation
+Step 6: Publish a test message
+1.	Open Topics.
+2.	Select MyExamTopic.
+3.	Click Publish message.
+4.	Enter the subject:
+SNS Practical Test
+5.	Enter the message:
+Hello! This is a test notification from Amazon SNS.
+6.	Click Publish message.
+Step 7: Verify the result
+Check your email inbox.
+
+
+
+
+
+week 4:
+b
+Step 1: Create an S3 bucket
+1.	Sign in to the AWS Management Console.
+2.	Search for S3.
+3.	Click Create bucket.
+4.	Enter a globally unique bucket name, such as my-cloudfront-demo-2026-yourid.
+5.	Choose a Region.
+6.	Keep the default security settings and create the bucket.
+7.	Open the bucket and upload a file named index.html.
+For example, the file can contain:
+<html>
+<head>
+    <title>My CloudFront Website</title>
+</head>
+<body>
+    <h1>Hello from Amazon CloudFront!</h1>
+    <p>My website is working successfully.</p>
+</body>
+</html>
+You now have a basic website file stored in S3.
+Step 2: Create a CloudFront distribution
+1.	Search for CloudFront in the AWS Console.
+2.	Select Create distribution.
+3.	Choose your S3 bucket as the origin.
+4.	Configure CloudFront to access the bucket securely. If the console offers Origin Access Control (OAC), use it.
+5.	Keep the recommended default settings.
+6.	Set the default root object to index.html.
+7.	Create the distribution.
+Wait until the distribution status becomes Deployed.
+CloudFront will assign a domain name resembling:
+d1234567890abc.cloudfront.net
+Your actual domain name will be different.
+Test it: Open the CloudFront domain name in your browser. If your S3 permissions and configuration are correct, your webpage should appear.
+AWS documents this process in its CloudFront distribution guide. AWS Documentation
+Step 3: Configure a domain using Route 53
+This step requires a little clarification.
+Route 53 does not automatically give you a free, usable domain such as example.com. You need to register a domain or use one you already own.
+If you have a domain, follow these steps:
+1.	Open Route 53 in the AWS Console.
+2.	Select Hosted zones.
+3.	Create a hosted zone for your registered domain if you don't already have one.
+4.	Open the hosted zone and select Create record.
+5.	Enter www as the record name if you want to use www.yourdomain.com.
+6.	Choose record type A.
+7.	Enable Alias.
+8.	Select Alias to CloudFront distribution.
+9.	Select your CloudFront distribution.
+10.	Create the record.
+Before the custom domain works, you must also configure that domain as an alternate domain name on the CloudFront distribution and associate a suitable TLS certificate. For CloudFront, the certificate must be provisioned in the US East (N. Virginia) Region. Your domain's DNS must also point to the appropriate Route 53 nameservers. AWS Documentation
+Important: If you don't own a domain, don't purchase one just for tomorrow's exam. You can demonstrate the working CloudFront distribution using its automatically assigned domain name and explain the Route 53 configuration as the next step.
+________________________________________
+3. What should you write in the exam?
+Here's a concise version you can learn.
+Aim: To create an Amazon CloudFront distribution and configure Amazon Route 53 to map a domain name to the distribution.
+Procedure:
+1.	Create an S3 bucket and upload a sample HTML page.
+2.	Create a CloudFront distribution using the S3 bucket as the origin.
+3.	Configure index.html as the default root object.
+4.	Wait until the distribution is deployed.
+5.	Open the CloudFront domain name and verify that the webpage loads.
+6.	In Route 53, create or select a hosted zone for a registered domain.
+7.	Create an alias record pointing to the CloudFront distribution.
+8.	Configure the custom domain and its HTTPS certificate as required.
+9.	Open the custom domain and verify the website.
+
+
+
+Week 5
+
+Step 1: Create the VPC
+1.	Open the AWS Management Console.
+2.	Search for VPC in the search bar and open it.
+3.	In the left menu, select Your VPCs.
+4.	Click Create VPC.
+5.	Choose VPC only.
+6.	Enter the following details:
+Setting	Value
+Name tag	MyVPC
+IPv4 CIDR block	10.0.0.0/16
+IPv6 CIDR block	No IPv6 CIDR block
+Tenancy	Default
+7.	Click Create VPC.
+What does 10.0.0.0/16 mean?
+It defines the IP address range available inside your VPC. We'll create a smaller subnet inside this range in the next step.
+
+
+Step 2: Create a subnet inside MyVPC
+A subnet is a smaller network inside your VPC. We'll create one for our EC2 instance.
+1.	Open the VPC Dashboard in the AWS Console.
+2.	In the left-side menu, find Subnets.
+3.	Click Create subnet.
+4.	Under VPC ID, select the VPC you created: MyVPC.
+5.	Enter these details:
+Setting	Value
+Subnet name	MySubnet
+Availability Zone	Choose any one available
+IPv4 subnet CIDR block	10.0.1.0/24
+6.	Click Create subnet.
+Step 3: Enable public IP assignment
+Since we'll eventually launch an EC2 instance that can connect to the internet, let's enable automatic public IPv4 assignment for this subnet.
+1.	Go to Subnets and select MySubnet.
+2.	Click Actions → Edit subnet settings.
+3.	Enable Auto-assign public IPv4 address.
+4.	Click Save.
+Note: This setting allows instances launched in this subnet to receive a public IPv4 address automatically. The Internet Gateway and route table still need to be configured before the instance can communicate with the internet.
+
+
+Step 4: Create an Internet Gateway
+An Internet Gateway (IGW) connects your VPC to the internet. We'll create one and attach it to MyVPC.
+A. Create the Internet Gateway
+1.	Open the VPC Dashboard in the AWS Console.
+2.	In the left menu, find Internet gateways.
+3.	Click Create internet gateway.
+4.	Enter the following name:
+MyInternetGateway
+5.	Click Create internet gateway.
+B. Attach it to your VPC
+Creating the gateway alone isn't enough—we must attach it to MyVPC.
+1.	Select the newly created MyInternetGateway.
+2.	Click Actions → Attach to a VPC.
+3.	Select MyVPC.
+4.	Click Attach internet gateway.
+✅ You should now see the gateway's state as Attached, with MyVPC listed as its attached VPC.
+Why do we need it? The Internet Gateway provides a path between your VPC and the internet, provided the route table and security settings are configured correctly.
+
+
+
+Step 5: Create a Route Table
+A route table contains rules that determine where network traffic from your subnet should go.
+We'll create a route table and configure it to send internet traffic through your Internet Gateway.
+A. Create the route table
+1.	Open the VPC Dashboard in AWS.
+2.	In the left menu, click Route tables.
+3.	Click Create route table.
+4.	Enter these details:
+Setting	Value
+Name	MyRouteTable
+VPC	MyVPC
+5.	Click Create route table.
+B. Associate the route table with your subnet
+1.	Select MyRouteTable.
+2.	Open the Subnet associations tab.
+3.	Click Edit subnet associations.
+4.	Select MySubnet.
+5.	Click Save associations.
+Now your subnet is associated with your route table.
+C. Add the internet route
+1.	With MyRouteTable selected, open the Routes tab.
+2.	Click Edit routes → Add route.
+3.	Enter the following:
+Destination	Target
+0.0.0.0/0	Select Internet Gateway, then choose MyInternetGateway
+4.	Click Save changes.
+What does 0.0.0.0/0 mean?
+It represents all IPv4 destinations. This route tells AWS to send traffic destined for outside the VPC through the Internet Gateway.
+Your VPC now has a route for internet traffic. The subnet can function as a public subnet when the necessary routing and public IP settings are in place.
+
+
+Step 6: Create a Security Group
+A Security Group acts as a virtual firewall for your EC2 instance. It controls which incoming and outgoing traffic is allowed.
+Your lab record says to allow only the required traffic, such as SSH (22) and HTTP (80).
+A. Create the security group
+1.	Open the VPC Dashboard.
+2.	In the left menu, click Security groups.
+3.	Click Create security group.
+4.	Enter these details:
+Setting	Value
+Security group name	MySecurityGroup
+Description	Allow required traffic for MyVPC
+VPC	MyVPC
+B. Configure inbound rules
+Under Inbound rules, click Add rule and configure:
+Type	Protocol	Port	Source
+SSH	TCP	22	My IP
+HTTP	TCP	80	0.0.0.0/0
+Important security note:
+•	SSH (22): Select My IP to restrict remote access to your current public IP address.
+•	HTTP (80): Use 0.0.0.0/0 only if you intend to make a website publicly accessible.
+•	Avoid setting SSH's source to 0.0.0.0/0; that exposes SSH access attempts to the entire internet.
+C. Configure outbound rules
+For this basic practical, you can leave the default outbound rule allowing all traffic. If your lab specifically requires restricting outbound traffic, we can configure that separately.
+D. Create the security group
+Click Create security group.
+You should now see MySecurityGroup in the list.
+
+
+
+Step 7: Launch an EC2 instance
+An EC2 instance is a virtual computer running in AWS. We'll place it inside MyVPC and use MySecurityGroup to control its traffic.
+1. Open EC2
+1.	Go to the AWS Management Console.
+2.	Search for EC2.
+3.	Click Instances in the left menu.
+4.	Click Launch instances.
+2. Configure the instance
+Use these settings:
+Setting	What to select
+Name	MyVPC-Instance
+Amazon Machine Image (AMI)	Amazon Linux
+Instance type	t3.micro or an eligible free-tier instance type
+Key pair	Create a new key pair if you need SSH access; download and keep it safe
+VPC	MyVPC
+Subnet	MySubnet
+Auto-assign public IP	Enable
+Security group	Select existing security group → MySecurityGroup
+Important: AWS may charge for the instance and public IPv4 address. If you only need to demonstrate the VPC configuration for your practical, you can stop here without launching an instance. But your lab procedure does include an EC2 instance.
+3. Review and launch
+1.	Check that the VPC and subnet are correct.
+2.	Confirm that MySecurityGroup is selected.
+3.	Click Launch instance.
+Wait until the instance appears in the EC2 Instances list.
+4. Verify the result
+Check these details:
+•	Instance state: Running
+•	VPC ID: Your MyVPC
+•	Subnet ID: Your MySubnet
+•	Security group: MySecurityGroup
+You don't need to connect to the instance just to verify these settings.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Week 6
+
+Aim: To create and execute a simple Hello World application using AWS Lambda.
+What is AWS Lambda?
+AWS Lambda lets you run code without creating or managing a server. You write a function, AWS executes it when triggered, and you receive the result.
+We'll follow your lab notebook's procedure.
+Step 1: Open AWS Lambda
+1.	Open the AWS Management Console.
+2.	Search for Lambda.
+3.	Open the Lambda service.
+4.	Check that you're in the AWS Region you want to use.
+Step 2: Create a Lambda function
+1.	Click Create a function.
+2.	Select Author from scratch.
+3.	Enter these details:
+Setting	Value
+Function name	HelloWorld
+Runtime	Python 3.14, or the latest Python runtime available
+Architecture	x86_64
+Permissions	Create a new role with basic Lambda permissions
+4.	Click Create function.
+AWS will create your function and an execution role. The basic role allows Lambda to write execution logs to CloudWatch.
+Cost note: A simple Lambda function that you invoke a few times is generally within the Lambda free tier, if eligible. CloudWatch logging and other AWS services may have separate charges, so we'll keep this experiment minimal.
+Step 3: Enter the Python code
+After your function is created:
+1.	Scroll to the Code tab.
+2.	Find the code editor.
+3.	Replace the existing code with this:
+def lambda_handler(event, context):
+return {
+'statusCode': 200,
+'body': 'Hello World!'
+}
+4.	Click Deploy to save your changes.
+What does this code do?
+•	lambda_handler(event, context) is the function Lambda executes.
+•	event contains input data sent to the function.
+•	context provides information about the execution environment.
+•	statusCode: 200 indicates success.
+•	body contains the message we want to return.
+Step 4: Create a test event
+1.	Click Test.
+2.	If prompted to configure a test event, select Create new event.
+3.	Enter an event name, such as HelloWorldTest.
+4.	Keep the default JSON test event if one is provided.
+5.	Click Save or Create, depending on the interface.
+Step 5: Execute the function
+1.	Select your test event.
+2.	Click Test.
+3.	Wait for the execution result.
+You should see a response similar to:
+{
+  "statusCode": 200,
+  "body": "Hello World!"
+}
+Your execution should also show a successful result.
+Expected output:
+Hello World!
+Result: The Hello World application was successfully created and executed using AWS Lambda.
+
+
+
+
+
+---------------------------------------------------------------------------------------------------------------------
+week 1
+
+-------------------Open Ubuntu Terminal--------------------------
+ananya@computername:~$
+lsb_release -a
+java -version
+javac -version
+hadoop version
+ssh -V
+
+sudo apt update
+
+
+--------------------Check / Install Java JDK 17--------------------------
+java -version
+javac -version
+sudo apt install openjdk-17-jdk -y
+
+java -version
+javac -version
+readlink -f $(which java)
+o/p:/usr/lib/jvm/java-17-openjdk-amd64
+
+
+-----------------------Install OpenSSH Server-----------------------------
+sudo apt install openssh-server -y
+sudo systemctl status ssh
+sudo systemctl start ssh
+check : sudo systemctl status ssh
+
+ssh -V
+ 
+
+------------------------Create the Hadoop User----------------------------
+sudo adduser hdoop
+(Enter a password when asked.
+
+For the other information, press Enter.
+
+At the end:
+
+Is the information correct? [Y/n]
+
+Type:
+
+Y)
+
+
+----------------------Switch to the Hadoop User------------------------------
+su - hdoop
+o/p: hdoop@computername:~$
+
+
+--------------------Configure Passwordless SSH-----------------------------
+ssh-keygen -t rsa -P "" -f ~/.ssh/id_rsa
+
+cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+
+chmod 0600 ~/.ssh/authorized_keys
+
+ssh localhost
+yes
+exit
+
+ssh localhost
+exit
+hdoop@computername:~$
+
+
+
+
+---------------------Download Hadoop 3.5.0------------------------
+whoami ---->    hdoop
+
+wget https://dlcdn.apache.org/hadoop/common/hadoop-3.5.0/hadoop-3.5.0.tar.gz
+tar xzf hadoop-3.5.0.tar.gz
+
+ls
+o/p: hadoop-3.5.0
+hadoop-3.5.0.tar.gz
+hadoop installation path: /home/hdoop/hadoop-3.5.0
+
+
+
+-------------------Configure Hadoop Environment Variables------------------
+nano ~/.bashrc
+
+# Hadoop Environment Variables
+
+export HADOOP_HOME=/home/hdoop/hadoop-3.5.0
+export HADOOP_INSTALL=$HADOOP_HOME
+export HADOOP_MAPRED_HOME=$HADOOP_HOME
+export HADOOP_COMMON_HOME=$HADOOP_HOME
+export HADOOP_HDFS_HOME=$HADOOP_HOME
+export YARN_HOME=$HADOOP_HOME
+export HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native
+export PATH=$PATH:$HADOOP_HOME/sbin:$HADOOP_HOME/bin
+export HADOOP_OPTS="-Djava.library.path=$HADOOP_HOME/lib/native"
+
+Ctrl + O
+Enter
+Ctrl + X
+
+source ~/.bashrc
+echo $HADOOP_HOME
+(Expected:
+
+/home/hdoop/hadoop-3.5.0
+
+Also check Hadoop:
+
+hadoop version
+
+You should see Hadoop 3.5.0.)
+
+
+
+
+------------------------Configure hadoop-env.sh--------------------------------
+nano $HADOOP_HOME/etc/hadoop/hadoop-env.sh
+
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+
+grep JAVA_HOME $HADOOP_HOME/etc/hadoop/hadoop-env.sh
+
+
+
+-----------------------Configure core-site.xml------------------------------
+nano $HADOOP_HOME/etc/hadoop/core-site.xml
+
+    <property>
+        <name>fs.defaultFS</name>
+        <value>hdfs://localhost:9000</value>
+    </property>
+
+
+
+--------------------Configure hdfs-site.xml------------------------------
+nano $HADOOP_HOME/etc/hadoop/hdfs-site.xml
+
+
+ <property>
+        <name>dfs.replication</name>
+        <value>1</value>
+    </property>
+
+
+
+
+--------------------------Configure mapred-site.xml----------------------
+nano $HADOOP_HOME/etc/hadoop/mapred-site.xml
+
+ <property>
+        <name>mapreduce.framework.name</name>
+        <value>yarn</value>
+    </property>
+
+    <property>
+        <name>yarn.app.mapreduce.am.env</name>
+        <value>HADOOP_MAPRED_HOME=/home/hdoop/hadoop-3.5.0</value>
+    </property>
+
+    <property>
+        <name>mapreduce.map.env</name>
+        <value>HADOOP_MAPRED_HOME=/home/hdoop/hadoop-3.5.0</value>
+    </property>
+
+    <property>
+        <name>mapreduce.reduce.env</name>
+        <value>HADOOP_MAPRED_HOME=/home/hdoop/hadoop-3.5.0</value>
+    </property>
+
+
+
+
+
+
+
+-----------------------------Configure yarn-site.xml------------------------------
+nano $HADOOP_HOME/etc/hadoop/yarn-site.xml
+
+ <property>
+        <name>yarn.nodemanager.aux-services</name>
+        <value>mapreduce_shuffle</value>
+    </property>
+
+    <property>
+        <name>yarn.nodemanager.aux-services.mapreduce.shuffle.class</name>
+        <value>org.apache.hadoop.mapred.ShuffleHandler</value>
+    </property>
+
+    <property>
+        <name>yarn.resourcemanager.hostname</name>
+        <value>localhost</value>
+    </property>
+
+    <property>
+        <name>yarn.nodemanager.env-whitelist</name>
+        <value>JAVA_HOME,HADOOP_COMMON_HOME,HADOOP_HDFS_HOME,HADOOP_CONF_DIR,HADOOP_COMMON_LIB_NATIVE_DIR,HADOOP_MAPRED_HOME</value>
+    </property>
+
+    <property>
+        <name>yarn.resourcemanager.webapp.address</name>
+        <value>0.0.0.0:8088</value>
+    </property>
+
+
+
+
+
+
+
+
+-------------------------Format the NameNode----------------------
+hdfs namenode -format
+
+-------------------Start HDFS------------------------
+start-dfs.sh
+
+jps
+
+o/p:
+NameNode
+DataNode
+SecondaryNameNode
+
+
+-----------------Start YARN--------------------------
+start-yarn.sh
+
+jps
+
+o/p:
+NameNode
+DataNode
+SecondaryNameNode
+ResourceManager
+NodeManager
+
+
+---------------------Open the Hadoop Browser Interfaces------------------------
+NameNode
+http://localhost:9870
+DataNode
+http://localhost:9864
+YARN ResourceManager
+http://localhost:8088
+
+If you want the direct YARN Cluster page:
+http://localhost:8088/cluster
+
+
+
+---------------------------------------------------------------------------------------------------------------------
+week 2
+
+
+hadoop version
+o/p:Hadoop 3.5.0
+
+start-dfs.sh
+start-yarn.sh
+
+jps
+
+NameNode
+DataNode
+SecondaryNameNode
+ResourceManager
+NodeManager
+
+if not installed , install
+
+
+
+
+general:
+check if hadoop is running
+jps
+ 
+if not :
+start-dfs.sh
+start-yarn.sh
+jps
+
+cd ~
+
+pwd
+o/p:/home/hdoop
+
+nano example.txt
+
+BIG DATA ANALYTICS
+HADOOP IS USED FOR PROCESSING BIG DATA
+HDFS STORES LARGE FILES
+
+Ctrl + O
+Enter
+Ctrl + X
+
+ls
+o/p:example.txt
+
+hdfs dfs -mkdir /aiml
+hdfs dfs -ls /
+o/p: found 2 items ...
+
+hdfs dfs -put example.txt /aiml/
+
+hdfs dfs -cat /aiml/example.txt
+o/p:BIG DATA ANALYTICS
+HADOOP IS USED FOR PROCESSING BIG DATA
+HDFS STORES LARGE FILES
+
+hdfs dfs -mkdir /aiml/input
+hdfs dfs -ls /aiml
+o/p: found 2 items ...
+
+hdfs dfs -put example.txt /aiml/input/
+hdfs dfs -ls /aiml/input
+o/p: found 1 items
+
+hdfs dfs -ls -R /aiml
+You should see both:
+/aiml/example.txt
+/aiml/input/example.txt
+
+cd ~
+hdfs dfs -get /aiml/input/example.txt retrieved.txt
+
+cat retrieved.txt
+o/p:BIG DATA ANALYTICS
+HADOOP IS USED FOR PROCESSING BIG DATA
+HDFS STORES LARGE FILES
+
+hdfs dfs -rm /aiml/example.txt
+o/p: deleted 
+
+hdfs dfs -ls /aiml
+o/p: only input
+
+hdfs dfs -rm /aiml/input/example.txt
+o/p:deleted
+
+hdfs dfs -rmdir /aiml/input
+hdfs dfs -ls /aiml
+
+
+
+----------------------------------------------------------------------------------------------------------------------
+week 3
+
+hadoop version
+o/p:Hadoop 3.5.0
+
+start-dfs.sh
+start-yarn.sh
+
+jps
+
+NameNode
+DataNode
+SecondaryNameNode
+ResourceManager
+NodeManager
+
+if not installed , install
+
+
+
+
+general:
+check if hadoop is running
+jps
+ 
+if not :
+start-dfs.sh
+start-yarn.sh
+jps
+
+
+----------------------week 3----------------------
+
+ananya@Ananya:~$
+su - hdoop
+hdoop@Ananya:~$
+
+jps
+
+NameNode
+DataNode
+SecondaryNameNode
+ResourceManager
+NodeManager
+Jps
+
+start-dfs.sh
+start-yarn.sh
+jps
+
+
+if namenode trouble: 
+stop-yarn.sh
+stop-dfs.sh
+
+hdfs namenode -format
+
+start-dfs.sh
+start-yarn.sh
+jps
+
+
+cd ~
+pwd
+o/p:
+/home/hdoop
+
+
+----------------------create the java prgm----------
+nano ProcessUnits.java
+
+package hadoop;
+
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.StringTokenizer;
+
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapred.FileInputFormat;
+import org.apache.hadoop.mapred.FileOutputFormat;
+import org.apache.hadoop.mapred.JobClient;
+import org.apache.hadoop.mapred.JobConf;
+import org.apache.hadoop.mapred.MapReduceBase;
+import org.apache.hadoop.mapred.Mapper;
+import org.apache.hadoop.mapred.OutputCollector;
+import org.apache.hadoop.mapred.Reducer;
+import org.apache.hadoop.mapred.Reporter;
+import org.apache.hadoop.mapred.TextInputFormat;
+import org.apache.hadoop.mapred.TextOutputFormat;
+
+public class ProcessUnits {
+
+    public static class E_EMapper extends MapReduceBase
+            implements Mapper<LongWritable, Text, Text, IntWritable> {
+
+        public void map(LongWritable key, Text value,
+                OutputCollector<Text, IntWritable> output,
+                Reporter reporter) throws IOException {
+
+            String line = value.toString();
+
+            StringTokenizer s = new StringTokenizer(line);
+
+            String year = s.nextToken();
+            String lasttoken = null;
+
+            while (s.hasMoreTokens()) {
+                lasttoken = s.nextToken();
+            }
+
+            int units = Integer.parseInt(lasttoken);
+
+            output.collect(new Text(year), new IntWritable(units));
+        }
+    }
+
+    public static class E_EReduce extends MapReduceBase
+            implements Reducer<Text, IntWritable, Text, IntWritable> {
+
+        public void reduce(Text key, Iterator<IntWritable> values,
+                OutputCollector<Text, IntWritable> output,
+                Reporter reporter) throws IOException {
+
+            int maxavg = 30;
+
+            while (values.hasNext()) {
+
+                int val = values.next().get();
+
+                if (val > maxavg) {
+                    output.collect(key, new IntWritable(val));
+                }
+            }
+        }
+    }
+
+    public static void main(String args[]) throws Exception {
+
+        JobConf conf = new JobConf(ProcessUnits.class);
+
+        conf.setJobName("max_electricityunits");
+
+        conf.setOutputKeyClass(Text.class);
+        conf.setOutputValueClass(IntWritable.class);
+
+        conf.setMapperClass(E_EMapper.class);
+        conf.setCombinerClass(E_EReduce.class);
+        conf.setReducerClass(E_EReduce.class);
+
+        conf.setInputFormat(TextInputFormat.class);
+        conf.setOutputFormat(TextOutputFormat.class);
+
+        FileInputFormat.setInputPaths(conf, new Path(args[0]));
+        FileOutputFormat.setOutputPath(conf, new Path(args[1]));
+
+        JobClient.runJob(conf);
+    }
+}
+
+
+
+
+
+Ctrl + O
+Enter
+Ctrl + X
+
+
+
+---------------------create input filr------------------
+nano sample.txt
+
+1979 23 23 2 43 24 25 26 26 26 26 25 26 25
+1980 26 27 28 28 28 30 31 31 31 30 30 30 29
+1981 31 32 32 32 33 34 35 36 36 34 34 34 34
+1984 39 38 39 39 39 41 42 43 40 39 38 38 40
+1985 38 39 39 39 39 41 41 41 00 40 39 39 45
+
+Ctrl + O
+Enter
+Ctrl + X
+
+ls
+cat sample.txt
+
+
+
+mkdir units
+ls
+
+
+javac -classpath "$(hadoop classpath)" -d units ProcessUnits.java
+find units -type f
+o/p:
+units/hadoop/ProcessUnits.class
+units/hadoop/ProcessUnits$E_EMapper.class
+units/hadoop/ProcessUnits$E_EReduce.class
+
+
+jar -cvf units.jar -C units/ .
+ls
+o/P: units.jar
+
+hdfs dfs -ls /
+hdfs dfs -mkdir /units_input
+hdfs dfs -ls /
+
+hdfs dfs -put sample.txt /units_input/
+hdfs dfs -ls /units_input
+hdfs dfs -cat /units_input/sample.txt
+
+hadoop jar units.jar hadoop.ProcessUnits /units_input /units_output
+
+
+------------------------------------------------------------------------------
+if trouble :
+nano $HADOOP_HOME/etc/hadoop/mapred-site.xml
+
+<configuration>
+
+    <property>
+        <name>mapreduce.framework.name</name>
+        <value>yarn</value>
+    </property>
+
+    <property>
+        <name>mapreduce.application.classpath</name>
+        <value>
+            $HADOOP_MAPRED_HOME/share/hadoop/mapreduce/*,
+            $HADOOP_MAPRED_HOME/share/hadoop/mapreduce/lib/*
+        </value>
+    </property>
+
+    <property>
+        <name>yarn.app.mapreduce.am.env</name>
+        <value>HADOOP_MAPRED_HOME=/home/hdoop/hadoop-3.5.0</value>
+    </property>
+
+    <property>
+        <name>mapreduce.map.env</name>
+        <value>HADOOP_MAPRED_HOME=/home/hdoop/hadoop-3.5.0</value>
+    </property>
+
+    <property>
+        <name>mapreduce.reduce.env</name>
+        <value>HADOOP_MAPRED_HOME=/home/hdoop/hadoop-3.5.0</value>
+    </property>
+
+</configuration>
+
+
+
+
+nano $HADOOP_HOME/etc/hadoop/yarn-site.xml
+
+<configuration>
+
+    <property>
+        <name>yarn.nodemanager.aux-services</name>
+        <value>mapreduce_shuffle</value>
+    </property>
+
+    <property>
+        <name>yarn.nodemanager.aux-services.mapreduce.shuffle.class</name>
+        <value>org.apache.hadoop.mapred.ShuffleHandler</value>
+    </property>
+
+    <property>
+        <name>yarn.resourcemanager.hostname</name>
+        <value>localhost</value>
+    </property>
+
+    <property>
+        <name>yarn.nodemanager.env-whitelist</name>
+        <value>JAVA_HOME,HADOOP_COMMON_HOME,HADOOP_HDFS_HOME,HADOOP_CONF_DIR,HADOOP_COMMON_LIB_NATIVE_DIR,HADOOP_MAPRED_HOME</value>
+    </property>
+
+</configuration>
+
+
+
+stop-yarn.sh
+start-yarn.sh
+hadoop jar units.jar hadoop.ProcessUnits /units_input /units_output
+-----------------------------------------------------------------------------------
+
+
+hdfs dfs -ls /units_output
+
+o/p:
+_SUCCESS
+part-00000
+
+hdfs dfs -cat /units_output/part-00000
+o/p:
+1979    43
+1980    31
+1981    34
+1984    40
+1985    45
+
+
+
+
+-----------------------------------------------------------------------------------------------------------------------
+
+week 4
+
+start-dfs.sh
+start-yarn.sh
+jps
+
+mkdir -p ~/week4
+cd ~/week4
+pwd
+
+
+nano Temperature.txt
+
+2020 35
+2020 42
+2020 38
+2021 40
+2021 45
+2021 41
+2022 37
+2022 43
+2022 39
+Ctrl + O, press Enter, then Ctrl + X
+
+cat Temperature.txt
+
+hdfs dfs -mkdir -p /week4/input
+hdfs dfs -put Temperature.txt /week4/input/
+
+hdfs dfs -ls /week4/input
+hdfs dfs -cat /week4/input/Temperature.txt
+/week4/input/Temperature.txt/week4/input/Temperature.txt
+
+mkdir -p src/org/myorg/demo
+nano src/org/myorg/demo/MaxTemperatureMapper.java
+
+package org.myorg.demo;
+
+import java.io.IOException;
+import java.util.StringTokenizer;
+
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
+
+public class MaxTemperatureMapper
+        extends Mapper<LongWritable, Text, Text, IntWritable> {
+
+    @Override
+    public void map(LongWritable key, Text value, Context context)
+            throws IOException, InterruptedException {
+
+        StringTokenizer tokenizer =
+                new StringTokenizer(value.toString());
+
+        String year = tokenizer.nextToken();
+        int temperature = Integer.parseInt(tokenizer.nextToken());
+
+        context.write(new Text(year), new IntWritable(temperature));
+    }
+}
+
+
+
+nano src/org/myorg/demo/MaxTemperatureReducer.java
+
+package org.myorg.demo;
+
+import java.io.IOException;
+
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Reducer;
+
+public class MaxTemperatureReducer
+        extends Reducer<Text, IntWritable, Text, IntWritable> {
+
+    @Override
+    public void reduce(Text key, Iterable<IntWritable> values,
+                       Context context)
+            throws IOException, InterruptedException {
+
+        int maxTemp = Integer.MIN_VALUE;
+
+        for (IntWritable value : values) {
+            if (value.get() > maxTemp) {
+                maxTemp = value.get();
+            }
+        }
+
+        context.write(key, new IntWritable(maxTemp));
+    }
+}
+
+
+nano src/org/myorg/demo/MaxTemperature.java
+
+package org.myorg.demo;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+
+public class MaxTemperature {
+
+    public static void main(String[] args) throws Exception {
+
+        if (args.length != 2) {
+            System.err.println(
+                "Usage: MaxTemperature <input> <output>");
+            System.exit(2);
+        }
+
+        Configuration conf = new Configuration();
+        Job job = Job.getInstance(conf, "Maximum Temperature");
+
+        job.setJarByClass(MaxTemperature.class);
+        job.setMapperClass(MaxTemperatureMapper.class);
+        job.setCombinerClass(MaxTemperatureReducer.class);
+        job.setReducerClass(MaxTemperatureReducer.class);
+
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(IntWritable.class);
+
+        FileInputFormat.addInputPath(job, new Path(args[0]));
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
+        System.exit(job.waitForCompletion(true) ? 0 : 1);
+    }
+}
+
+
+ls src/org/myorg/demo
+o/p:MaxTemperature.java
+MaxTemperatureMapper.java
+MaxTemperatureReducer.java
+
+mkdir -p classes
+javac -classpath "$(hadoop classpath)" -d classes src/org/myorg/demo/*.java
+
+find classes -type f
+o/p:classes/org/myorg/demo/MaxTemperature.class
+classes/org/myorg/demo/MaxTemperatureMapper.class
+classes/org/myorg/demo/MaxTemperatureReducer.class
+
+
+jar -cvf weather.jar -C classes .
+
+ls -lh weather.jar
+jar -tf weather.jar
+
+hdfs dfs -ls /week4/output
+if not exist: hdfs dfs -rm -r /week4/output
+
+hadoop jar weather.jar org.myorg.demo.MaxTemperature /week4/input /week4/output
+success
+
+hdfs dfs -ls /week4/output
+o/p:/week4/output/_SUCCESS
+/week4/output/part-r-00000
+
+hdfs dfs -cat /week4/output/part-r-00000
+o/p:2020    42
+2021    45
+2022    43
+
+stop-yarn.sh
+stop-dfs.sh
+jps
+
+
+
+-----------------------------------------------------------------------------------------------------------------------
+
+week 5
+
+
+start-dfs.sh
+start-yarn.sh
+jps
+
+mkdir -p ~/week5
+cd ~/week5
+pwd
+
+nano student
+
+John,18,4.0
+Mary,19,3.7
+Bill,20,3.9
+Joe,22,3.8
+Jill,20,4.0
+
+Ctrl + O, press Enter, then Ctrl + X
+
+cat student
+
+hdfs dfs -put student /
+hdfs dfs -cat /student
+
+cd ~
+wget https://archive.apache.org/dist/pig/pig-0.17.0/pig-0.17.0.tar.gz
+tar -xzf pig-0.17.0.tar.gz
+
+echo 'export PIG_HOME=$HOME/pig-0.17.0' >> ~/.bashrc
+echo 'export PATH=$PATH:$PIG_HOME/bin' >> ~/.bashrc
+echo 'export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64' >> ~/.bashrc
+source ~/.bashrc
+
+pig -version
+
+pig
+
+grunt> A = LOAD '/student' USING PigStorage(',') AS (name:chararray, age:int, gpa:float);
+grunt> DUMP A;
+
+o/p:
+(John,18,4.0)
+(Mary,19,3.7)
+(Bill,20,3.9)
+(Joe,22,3.8)
+(Jill,20,4.0)
+
+grunt> B = FILTER A BY name MATCHES 'J.*';
+grunt> DUMP B;
+
+o/p:
+(John,18,4.0)
+(Joe,22,3.8)
+(Jill,20,4.0)
+
+grunt> B = FOREACH A GENERATE name;
+grunt> DUMP B;
+
+o/p:
+(John)
+(Mary)
+(Bill)
+(Joe)
+(Jill)
+
+grunt> B = ORDER A BY age;
+grunt> DUMP B;
+
+o/p:
+(John,18,4.0)
+(Mary,19,3.7)
+(Jill,20,4.0)
+(Bill,20,3.9)
+(Joe,22,3.8)
+
+grunt> B = GROUP A BY age;
+grunt> DUMP B;
+
+grunt> C = LOAD '/student' USING PigStorage(',') AS (name:chararray, age:int, gpa:float);
+grunt> B = JOIN A BY name, C BY name;
+grunt> DUMP B;
+
+grunt> quit
+
+stop-yarn.sh
+stop-dfs.sh
+jps
+
+mapred --daemon stop historyserver
+jps
+
+
+
+--------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
