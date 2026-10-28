@@ -629,3 +629,676 @@ elif dnn_acc < lr_acc:
     print("\nResult: Logistic Regression performed better than DNN.")
 else:
     print("\nResult: Both models achieved the same accuracy.")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# =====================================================================================
+
+
+
+
+
+
+
+
+
+
+#week6
+import numpy as np
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras import layers, regularizers
+from sklearn.datasets import make_moons
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+
+# 1. Generate dataset
+
+X, y=make_moons(n_samples=1500, noise=0.25, random_state=42)
+
+X_train, X_test, y_train, y_test=train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y
+)
+
+scaler=StandardScaler()
+X_train=scaler.fit_transform(X_train)
+X_test=scaler.transform(X_test)
+
+# 2. Build DNN
+
+def build_model(reg=None):
+    model = keras.Sequential([
+        layers.Input(shape=(2,)),
+        layers.Dense(64, activation="relu", kernel_regularizer=reg),
+        layers.Dense(32, activation="relu", kernel_regularizer=reg),
+        layers.Dense(1, activation="sigmoid")
+    ])
+
+    model.compile(
+        optimizer="adam",
+        loss="binary_crossentropy",
+        metrics=["accuracy"]
+    )
+    return model
+
+
+# 3. Train and evaluate
+
+methods = {
+    "NONE": None,
+    "L1": regularizers.L1(0.001),
+    "L2": regularizers.L2(0.001)
+}
+
+results = {}
+
+for name, reg in methods.items():
+    model = build_model(reg)
+
+    history = model.fit(
+        X_train, y_train,
+        validation_split=0.2,
+        epochs=100,
+        batch_size=32,
+        verbose=0
+    )
+
+    loss, accuracy = model.evaluate(X_test, y_test, verbose=0)
+    results[name] = (model, accuracy)
+
+    print(name, "Accuracy:", round(accuracy * 100, 2), "%")
+
+# 4. Display final weights
+
+for name, (model, accuracy) in results.items():
+    print("\n", name)
+
+    for layer in model.layers:
+        weights = layer.get_weights()
+
+        if weights:
+            print("Layer:", layer.name)
+            print("Average weight:",
+                  round(np.mean(np.abs(weights[0])), 4))
+
+
+# 5. Accuracy comparison
+
+print("\nFinal Results")
+
+for name, (model, accuracy) in results.items():
+    print(name, ":", round(accuracy * 100, 2), "%")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#week7
+import numpy as np
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras import layers
+import time
+
+# 1. Load Fashion-MNIST Dataset
+
+(X_train, y_train), (X_test, y_test) = \
+    keras.datasets.fashion_mnist.load_data()
+
+X_train = X_train.astype("float32") / 255.0
+X_test = X_test.astype("float32") / 255.0
+
+X_train = X_train.reshape(-1, 784)
+X_test = X_test.reshape(-1, 784)
+
+print("Training samples:", len(X_train))
+print("Testing samples:", len(X_test))
+
+# 2. Build Neural Network
+
+def build_model():
+    model = keras.Sequential([
+        layers.Input(shape=(784,)),
+        layers.Dense(128, activation="relu"),
+        layers.Dense(64, activation="relu"),
+        layers.Dense(10, activation="softmax")
+    ])
+
+    model.compile(
+        optimizer=keras.optimizers.SGD(learning_rate=0.01),
+        loss="sparse_categorical_crossentropy",
+        metrics=["accuracy"]
+    )
+    return model
+
+# 3. Normal / Full-Batch Gradient Descent
+
+tf.keras.utils.set_random_seed(42)
+model_normal = build_model()
+
+start = time.time()
+
+history_normal = model_normal.fit(
+    X_train, y_train,
+    epochs=20,
+    batch_size=len(X_train),
+    validation_split=0.1,
+    verbose=0
+)
+
+normal_time = time.time() - start
+normal_loss, normal_acc = model_normal.evaluate(
+    X_test, y_test, verbose=0
+)
+
+
+# 4. Mini-Batch Gradient Descent
+
+tf.keras.utils.set_random_seed(42)
+model_minibatch = build_model()
+
+batch_size = 32
+start = time.time()
+
+history_minibatch = model_minibatch.fit(
+    X_train, y_train,
+    epochs=20,
+    batch_size=batch_size,
+    validation_split=0.1,
+    verbose=0
+)
+
+minibatch_time = time.time() - start
+minibatch_loss, minibatch_acc = model_minibatch.evaluate(
+    X_test, y_test, verbose=0
+)
+
+
+# 5. Calculate Weight Updates
+
+normal_updates = 1
+minibatch_updates = int(np.ceil(len(X_train) / batch_size))
+
+
+# 6. Display Results
+
+print("\nFinal Comparison")
+print("Parameter       Normal      Mini-Batch")
+print("Batch Size     ", len(X_train), "   ", batch_size)
+print("Updates/Epoch  ", normal_updates, "           ",
+      minibatch_updates)
+print("Test Loss      ", round(normal_loss, 4), "    ",
+      round(minibatch_loss, 4))
+print("Test Accuracy  ", round(normal_acc * 100, 2), "%   ",
+      round(minibatch_acc * 100, 2), "%")
+print("Training Time  ", round(normal_time, 2), "    ",
+      round(minibatch_time, 2))
+
+
+# 7. Compare Training Accuracy
+
+normal_train_acc = history_normal.history["accuracy"][-1]
+minibatch_train_acc = history_minibatch.history["accuracy"][-1]
+
+print("\nTraining Accuracy")
+print("Normal:", round(normal_train_acc * 100, 2), "%")
+print("Mini-Batch:", round(minibatch_train_acc * 100, 2), "%")
+
+
+
+
+
+
+
+
+
+
+
+
+
+#week8
+import numpy as np
+import matplotlib.pyplot as plt
+import tensorflow as tf
+from tensorflow.keras import layers, models
+from tensorflow.keras.datasets import mnist
+
+# 1. Demonstrate Convolution Operations
+
+image = np.array([
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 1, 1, 1, 0, 0],
+    [0, 0, 1, 1, 1, 0, 0],
+    [0, 0, 1, 1, 1, 0, 0],
+    [0, 0, 1, 1, 1, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0]
+], dtype=np.float32).reshape(1, 7, 7, 1)
+
+vertical = np.array([
+    [-1, 0, 1],
+    [-1, 0, 1],
+    [-1, 0, 1]
+], dtype=np.float32).reshape(3, 3, 1, 1)
+
+horizontal = np.array([
+    [-1, -1, -1],
+    [0, 0, 0],
+    [1, 1, 1]
+], dtype=np.float32).reshape(3, 3, 1, 1)
+
+sharpen = np.array([
+    [0, -1, 0],
+    [-1, 5, -1],
+    [0, -1, 0]
+], dtype=np.float32).reshape(3, 3, 1, 1)
+
+v = tf.nn.conv2d(image, vertical, strides=1, padding="SAME")
+h = tf.nn.conv2d(image, horizontal, strides=1, padding="SAME")
+s = tf.nn.conv2d(image, sharpen, strides=1, padding="SAME")
+
+plt.subplot(1, 4, 1)
+plt.imshow(image[0, :, :, 0], cmap="gray")
+plt.title("Original")
+
+plt.subplot(1, 4, 2)
+plt.imshow(v[0, :, :, 0], cmap="gray")
+plt.title("Vertical")
+
+plt.subplot(1, 4, 3)
+plt.imshow(h[0, :, :, 0], cmap="gray")
+plt.title("Horizontal")
+
+plt.subplot(1, 4, 4)
+plt.imshow(s[0, :, :, 0], cmap="gray")
+plt.title("Sharpen")
+
+plt.show()
+
+
+# 2. Demonstrate Pooling Operations
+
+feature_map = np.array([
+    [1, 2, 3, 4],
+    [5, 6, 7, 8],
+    [9, 10, 11, 12],
+    [13, 14, 15, 16]
+], dtype=np.float32).reshape(1, 4, 4, 1)
+
+max_pool = tf.nn.max_pool2d(
+    feature_map, ksize=2, strides=2, padding="VALID"
+)
+
+avg_pool = tf.nn.avg_pool2d(
+    feature_map, ksize=2, strides=2, padding="VALID"
+)
+
+global_avg = tf.reduce_mean(feature_map, axis=[1, 2])
+
+print("Max Pooling:\n", max_pool[0, :, :, 0])
+print("Average Pooling:\n", avg_pool[0, :, :, 0])
+print("Global Average Pooling:\n", global_avg)
+
+
+# 3. Build CNN
+
+(X_train, y_train), (X_test, y_test) = mnist.load_data()
+
+X_train = X_train.astype("float32") / 255.0
+X_test = X_test.astype("float32") / 255.0
+
+X_train = X_train[..., np.newaxis]
+X_test = X_test[..., np.newaxis]
+
+model = models.Sequential([
+    layers.Input(shape=(28, 28, 1)),
+    layers.Conv2D(32, (3, 3), activation="relu", padding="same"),
+    layers.MaxPooling2D((2, 2)),
+    layers.Conv2D(64, (3, 3), activation="relu", padding="same"),
+    layers.AveragePooling2D((2, 2)),
+    layers.Conv2D(128, (3, 3), activation="relu", padding="same"),
+    layers.GlobalAveragePooling2D(),
+    layers.Dense(10, activation="softmax")
+])
+
+model.summary()
+
+# 4. Compile and Train CNN
+
+model.compile(
+    optimizer="adam",
+    loss="sparse_categorical_crossentropy",
+    metrics=["accuracy"]
+)
+
+history = model.fit(
+    X_train, y_train,
+    epochs=5,
+    batch_size=64,
+    validation_split=0.1
+)
+
+# 5. Evaluate CNN
+
+loss, accuracy = model.evaluate(X_test, y_test, verbose=0)
+
+print("Test Loss:", round(loss, 4))
+print("Test Accuracy:", round(accuracy * 100, 2), "%")
+
+
+# 6. Display Training Performance
+
+plt.subplot(1, 2, 1)
+plt.plot(history.history["accuracy"], label="Training")
+plt.plot(history.history["val_accuracy"], label="Validation")
+plt.title("Accuracy")
+plt.legend()
+
+plt.subplot(1, 2, 2)
+plt.plot(history.history["loss"], label="Training")
+plt.plot(history.history["val_loss"], label="Validation")
+plt.title("Loss")
+plt.legend()
+
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#week9
+import numpy as np
+import tensorflow as tf
+import matplotlib.pyplot as plt
+from tensorflow.keras import layers, models
+from tensorflow.keras.datasets import mnist
+
+# 1. Load MNIST Dataset
+
+(X_train, y_train), (X_test, y_test) = mnist.load_data()
+
+print("Training Data:", X_train.shape)
+print("Testing Data:", X_test.shape)
+
+
+# 2. Select Smaller Dataset
+
+X_train, y_train = X_train[:10000], y_train[:10000]
+X_test, y_test = X_test[:2000], y_test[:2000]
+
+
+# 3. Normalize Data
+
+X_train = X_train.astype("float32") / 255.0
+X_test = X_test.astype("float32") / 255.0
+
+
+# 4. Add Channel Dimension
+
+X_train = np.expand_dims(X_train, axis=-1)
+X_test = np.expand_dims(X_test, axis=-1)
+
+
+# 5. Define Residual Block
+
+def residual_block(x, filters, stride=1):
+    shortcut = x
+
+    x = layers.Conv2D(filters, 3, strides=stride,
+                      padding="same", use_bias=False)(x)
+    x = layers.BatchNormalization()(x)
+    x = layers.ReLU()(x)
+
+    x = layers.Conv2D(filters, 3, padding="same",
+                      use_bias=False)(x)
+    x = layers.BatchNormalization()(x)
+
+    if stride != 1 or shortcut.shape[-1] != filters:
+        shortcut = layers.Conv2D(
+            filters, 1, strides=stride,
+            padding="same", use_bias=False
+        )(shortcut)
+        shortcut = layers.BatchNormalization()(shortcut)
+
+    x = layers.Add()([x, shortcut])
+    x = layers.ReLU()(x)
+
+    return x
+
+
+# 6. Build ResNet Model
+
+inputs = layers.Input(shape=(28, 28, 1))
+
+x = layers.Conv2D(16, 3, padding="same",
+                  use_bias=False)(inputs)
+x = layers.BatchNormalization()(x)
+x = layers.ReLU()(x)
+
+x = residual_block(x, 16)
+x = residual_block(x, 16)
+
+x = residual_block(x, 32, stride=2)
+x = residual_block(x, 32)
+
+x = residual_block(x, 64, stride=2)
+x = residual_block(x, 64)
+
+x = layers.GlobalAveragePooling2D()(x)
+outputs = layers.Dense(10, activation="softmax")(x)
+
+model = models.Model(inputs, outputs)
+
+
+# 7. Display Model
+
+model.summary()
+
+
+# 8. Compile Model
+
+model.compile(
+    optimizer="adam",
+    loss="sparse_categorical_crossentropy",
+    metrics=["accuracy"]
+)
+
+
+# 9. Train ResNet
+
+history = model.fit(
+    X_train, y_train,
+    epochs=5,
+    batch_size=64,
+    validation_split=0.1
+)
+
+
+# 10. Evaluate Model
+
+loss, accuracy = model.evaluate(X_test, y_test, verbose=0)
+
+print("Test Loss:", round(loss, 4))
+print("Test Accuracy:", round(accuracy * 100, 2), "%")
+
+# 11. Make Predictions
+
+predictions = model.predict(X_test, verbose=0)
+predicted_labels = np.argmax(predictions, axis=1)
+
+
+# 12. Display Predictions
+
+plt.figure(figsize=(10, 5))
+
+for i in range(10):
+    plt.subplot(2, 5, i + 1)
+    plt.imshow(X_test[i].squeeze(), cmap="gray")
+    plt.title(f"True:{y_test[i]} Pred:{predicted_labels[i]}")
+    plt.axis("off")
+
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#week10
+import numpy as np
+import tensorflow as tf
+import matplotlib.pyplot as plt
+from tensorflow.keras.datasets import imdb
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Embedding, Bidirectional, SimpleRNN, Dense, Dropout
+
+# 1. Set Parameters
+VOCAB_SIZE = 10000
+MAX_LENGTH = 100
+BATCH_SIZE = 64
+EPOCHS = 5
+
+
+tf.keras.utils.set_random_seed(42)
+
+
+# 2. Load IMDB Dataset
+(X_train, y_train), (X_test, y_test) = imdb.load_data(
+    num_words=VOCAB_SIZE
+)
+
+X_train, y_train = X_train[:5000], y_train[:5000]
+X_test, y_test = X_test[:1000], y_test[:1000]
+print("Training Samples:", len(X_train))
+print("Testing Samples:", len(X_test))
+
+# 3. Pad Sequences
+X_train = pad_sequences(X_train, maxlen=MAX_LENGTH, padding="post")
+X_test = pad_sequences(X_test, maxlen=MAX_LENGTH, padding="post")
+
+# 4. Build Bidirectional RNN
+model = Sequential([
+    Embedding(VOCAB_SIZE, 32, mask_zero=True),
+    Bidirectional(SimpleRNN(32)),
+    Dropout(0.3),
+    Dense(16, activation="relu"),
+    Dense(1, activation="sigmoid")
+])
+
+
+# 5. Compile Model
+model.compile(
+    optimizer="adam",
+    loss="binary_crossentropy",
+    metrics=["accuracy"]
+)
+
+model.summary()
+
+# 6. Train Model
+history = model.fit(
+    X_train, y_train,
+    epochs=EPOCHS,
+    batch_size=BATCH_SIZE,
+    validation_split=0.2
+)
+
+
+# 7. Evaluate Model
+loss, accuracy = model.evaluate(X_test, y_test, verbose=0)
+
+print("Test Loss:", round(loss, 4))
+print("Test Accuracy:", round(accuracy * 100, 2), "%")
+
+
+# 8. Predict Sentiment
+
+predictions = model.predict(X_test[:10], verbose=0)
+
+for i in range(10):
+    pred = "Positive" if predictions[i][0] >= 0.5 else "Negative"
+    actual = "Positive" if y_test[i] == 1 else "Negative"
+
+    print("Review", i + 1, "| Predicted:", pred, "| Actual:", actual)
+
+
+# 9. Plot Accuracy
+
+plt.plot(history.history["accuracy"], label="Training")
+plt.plot(history.history["val_accuracy"], label="Validation")
+plt.xlabel("Epoch")
+plt.ylabel("Accuracy")
+plt.title("Sentiment Analysis")
+plt.legend()
+plt.show()
+
+
+
+
+
+    
