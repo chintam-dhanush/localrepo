@@ -1,0 +1,634 @@
+HADOOP 3.5.0 - COMPLETE COMMAND + CONFIGURATION CHEAT SHEET
+===============================================================
+
+Assumptions:
+- Hadoop user: hdoop
+- Hadoop home: /home/hdoop/hadoop
+- Hadoop 3.5.0
+- Java 17
+- Single-node / pseudo-distributed setup
+- Hostname: localhost
+
+IMPORTANT:
+1. Replace the paths only if your Hadoop installation uses a different home directory.
+2. Do NOT run "hdfs namenode -format" every time. Run it only for a fresh Hadoop setup.
+3. Before running a MapReduce job, the HDFS input/output paths must be correct.
+4. A MapReduce output directory must NOT already exist.
+
+---------------------------------------------------------------
+1. BASIC CHECKS
+---------------------------------------------------------------
+
+java -version
+# Check Java version.
+
+hadoop version
+# Check Hadoop version.
+
+echo $JAVA_HOME
+# Check JAVA_HOME.
+
+echo $HADOOP_HOME
+# Check HADOOP_HOME.
+
+which hadoop
+# Check which Hadoop installation is being used.
+
+jps
+# Check whether Hadoop daemons are running.
+
+
+---------------------------------------------------------------
+2. START / STOP HADOOP
+---------------------------------------------------------------
+
+start-dfs.sh
+# Start HDFS: NameNode, DataNode, SecondaryNameNode.
+
+start-yarn.sh
+# Start YARN: ResourceManager and NodeManager.
+
+jps
+# Confirm daemons are running.
+
+stop-yarn.sh
+# Stop YARN.
+
+stop-dfs.sh
+# Stop HDFS.
+
+stop-all.sh
+# Stop all Hadoop daemons. Use when you want to shut Hadoop down completely.
+
+
+---------------------------------------------------------------
+3. IF HADOOP IS NOT STARTING
+---------------------------------------------------------------
+
+jps
+# First check which daemons are actually running.
+
+stop-all.sh
+# Stop any partially running Hadoop services.
+
+start-dfs.sh
+start-yarn.sh
+jps
+# Start again and check.
+
+
+---------------------------------------------------------------
+4. FRESH HADOOP SETUP ONLY
+---------------------------------------------------------------
+
+mkdir -p ~/hadoopdata/hdfs/namenode
+mkdir -p ~/hadoopdata/hdfs/datanode
+# Create NameNode and DataNode storage directories.
+
+hdfs namenode -format
+# FORMAT THE NAMENODE ONLY ON A FRESH SETUP.
+# WARNING: Formatting deletes the existing HDFS namespace.
+
+
+---------------------------------------------------------------
+5. CORE HADOOP CONFIGURATION
+---------------------------------------------------------------
+
+Configuration file:
+$HADOOP_HOME/etc/hadoop/core-site.xml
+
+Use:
+
+<configuration>
+    <property>
+        <name>fs.defaultFS</name>
+        <value>hdfs://localhost:9000</value>
+    </property>
+</configuration>
+
+
+---------------------------------------------------------------
+6. HDFS CONFIGURATION
+---------------------------------------------------------------
+
+Configuration file:
+$HADOOP_HOME/etc/hadoop/hdfs-site.xml
+
+Use:
+
+<configuration>
+    <property>
+        <name>dfs.replication</name>
+        <value>1</value>
+    </property>
+
+    <property>
+        <name>dfs.namenode.name.dir</name>
+        <value>file:///home/hdoop/hadoopdata/hdfs/namenode</value>
+    </property>
+
+    <property>
+        <name>dfs.datanode.data.dir</name>
+        <value>file:///home/hdoop/hadoopdata/hdfs/datanode</value>
+    </property>
+</configuration>
+
+
+---------------------------------------------------------------
+7. MAPREDUCE CONFIGURATION
+---------------------------------------------------------------
+
+Configuration file:
+$HADOOP_HOME/etc/hadoop/mapred-site.xml
+
+Use:
+
+<configuration>
+    <property>
+        <name>mapreduce.framework.name</name>
+        <value>yarn</value>
+    </property>
+
+    <property>
+        <name>mapreduce.application.classpath</name>
+        <value>$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/*:$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/lib/*</value>
+    </property>
+</configuration>
+
+
+---------------------------------------------------------------
+8. YARN CONFIGURATION
+---------------------------------------------------------------
+
+Configuration file:
+$HADOOP_HOME/etc/hadoop/yarn-site.xml
+
+Use:
+
+<configuration>
+    <property>
+        <name>yarn.resourcemanager.hostname</name>
+        <value>localhost</value>
+    </property>
+
+    <property>
+        <name>yarn.nodemanager.aux-services</name>
+        <value>mapreduce_shuffle</value>
+    </property>
+
+    <property>
+        <name>yarn.nodemanager.aux-services.mapreduce_shuffle.class</name>
+        <value>org.apache.hadoop.mapred.ShuffleHandler</value>
+    </property>
+</configuration>
+
+
+---------------------------------------------------------------
+9. IMPORTANT HADOOP ENVIRONMENT FILE
+---------------------------------------------------------------
+
+Configuration file:
+$HADOOP_HOME/etc/hadoop/hadoop-env.sh
+
+Make sure JAVA_HOME is set correctly:
+
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+
+If your Java is installed somewhere else, find it with:
+
+readlink -f $(which java)
+# Shows the Java executable path.
+
+dirname $(dirname $(readlink -f $(which java)))
+# Shows the JAVA_HOME path.
+
+
+---------------------------------------------------------------
+10. SSH CHECK
+---------------------------------------------------------------
+
+sudo service ssh status
+# Check whether SSH service is running.
+
+ssh localhost
+# Test SSH connection.
+
+exit
+# Leave the SSH session.
+
+ssh-keygen -t rsa -P ""
+# Create an SSH key if passwordless SSH has not been configured.
+# Run only when needed.
+
+cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+# Add public key for passwordless localhost SSH.
+
+chmod 600 ~/.ssh/authorized_keys
+# Correct permissions.
+
+ssh localhost
+# Test passwordless SSH.
+
+
+---------------------------------------------------------------
+11. HDFS BASIC COMMANDS
+---------------------------------------------------------------
+
+hdfs dfs -ls /
+# List the HDFS root directory.
+
+hdfs dfs -mkdir /test
+# Create an HDFS directory.
+
+hdfs dfs -mkdir -p /week4/input
+# Create directories including parent directories.
+
+hdfs dfs -put file.txt /test/
+# Upload a LOCAL file to HDFS.
+
+hdfs dfs -get /test/file.txt .
+# Download a file FROM HDFS to the current LOCAL directory.
+
+hdfs dfs -cat /test/file.txt
+# Display an HDFS file.
+
+hdfs dfs -rm /test/file.txt
+# Delete an HDFS file.
+
+hdfs dfs -rm -r /test
+# Delete an HDFS directory recursively.
+
+hdfs dfs -rmdir /test
+# Remove an empty HDFS directory.
+
+hdfs dfs -ls -R /
+# Recursively list HDFS directories and files.
+
+
+---------------------------------------------------------------
+12. HDFS UPLOAD / DOWNLOAD BACKUP PATTERN
+---------------------------------------------------------------
+
+hdfs dfs -mkdir -p /week4/input
+# Create input directory.
+
+hdfs dfs -put -f Temperature.txt /week4/input/
+# Upload local input file. -f overwrites an existing file.
+
+hdfs dfs -cat /week4/input/Temperature.txt
+# Verify the uploaded file.
+
+hdfs dfs -get -f /week4/input/Temperature.txt .
+# Download HDFS input back to local directory.
+# Useful for normal Java backup programs that use FileReader.
+
+
+---------------------------------------------------------------
+13. MAPREDUCE / JAVA COMPILATION
+---------------------------------------------------------------
+
+mkdir -p classes
+# Create compiled-class directory.
+
+javac -classpath "$(hadoop classpath)" -d classes src/org/myorg/demo/*.java
+# Compile Hadoop Java source files.
+
+find classes -type f
+# Check compiled .class files.
+
+jar -cvf weather.jar -C classes .
+# Create a JAR from compiled classes.
+
+jar -tf weather.jar
+# Display files inside the JAR.
+
+ls -lh weather.jar
+# Check JAR file size.
+
+
+---------------------------------------------------------------
+14. RUN A MAPREDUCE JOB
+---------------------------------------------------------------
+
+hadoop jar weather.jar org.myorg.demo.MaxTemperature /week4/input /week4/output
+# Run the MapReduce program.
+# First argument = HDFS input directory.
+# Second argument = HDFS output directory.
+
+
+---------------------------------------------------------------
+15. MAPREDUCE OUTPUT CHECK
+---------------------------------------------------------------
+
+hdfs dfs -ls /week4/output
+# Check output files.
+
+hdfs dfs -cat /week4/output/part-r-00000
+# Display reducer output.
+
+hdfs dfs -cat /week4/output/part-m-00000
+# Display mapper output if the job produces mapper-only output.
+
+_SUCCESS
+# This is a marker showing that the Hadoop job completed successfully.
+
+
+---------------------------------------------------------------
+16. IF MAPREDUCE OUTPUT DIRECTORY ALREADY EXISTS
+---------------------------------------------------------------
+
+hdfs dfs -ls /week4/output
+# Check whether it exists.
+
+hdfs dfs -rm -r /week4/output
+# Delete the old output directory ONLY if you no longer need it.
+
+hadoop jar weather.jar org.myorg.demo.MaxTemperature /week4/input /week4/output
+# Run the job again.
+
+
+---------------------------------------------------------------
+17. WORD COUNT MAPREDUCE PATTERN
+---------------------------------------------------------------
+
+hdfs dfs -mkdir -p /wordcount_input
+hdfs dfs -put -f sample.txt /wordcount_input/
+# Create HDFS input and upload sample.txt.
+
+hadoop jar wordcount.jar hadoop.WordCount /wordcount_input /wordcount_output
+# Run Word Count MapReduce.
+
+hdfs dfs -cat /wordcount_output/part-r-00000
+# Display Word Count output.
+
+If using the older mapred API and the output is named part-00000:
+
+hdfs dfs -cat /wordcount_output/part-00000
+
+
+---------------------------------------------------------------
+18. NORMAL JAVA BACKUP + HDFS
+---------------------------------------------------------------
+
+javac SimpleWordCount.java
+# Compile normal Java Word Count.
+
+hdfs dfs -get -f /wordcount_input/sample.txt .
+# Bring HDFS input to local filesystem.
+
+java SimpleWordCount sample.txt wordcount_result.txt
+# Run normal Java program.
+
+hdfs dfs -mkdir -p /wordcount_output
+# Create HDFS output directory.
+
+hdfs dfs -put -f wordcount_result.txt /wordcount_output/
+# Put normal Java result into HDFS.
+
+hdfs dfs -cat /wordcount_output/wordcount_result.txt
+# Display result from HDFS.
+
+
+---------------------------------------------------------------
+19. NORMAL JAVA MAX TEMPERATURE BACKUP
+---------------------------------------------------------------
+
+javac MaxTemperature.java
+# Compile normal Java program.
+
+hdfs dfs -get -f /week4/input/Temperature.txt .
+# Bring HDFS input to local filesystem.
+
+java MaxTemperature Temperature.txt temperature_result.txt
+# Calculate maximum temperature using normal Java.
+
+hdfs dfs -mkdir -p /week4/output
+# Create HDFS output directory.
+
+hdfs dfs -put -f temperature_result.txt /week4/output/
+# Put result into HDFS.
+
+hdfs dfs -cat /week4/output/temperature_result.txt
+# Display result from HDFS.
+
+
+---------------------------------------------------------------
+20. HISTORY SERVER
+---------------------------------------------------------------
+
+mapred --daemon start historyserver
+# Start MapReduce JobHistory Server when you need to view completed jobs/history.
+
+jps
+# Check that JobHistoryServer is running.
+
+mapred --daemon stop historyserver
+# Stop the JobHistory Server.
+
+If "historyserver" is not starting:
+
+jps
+# Check whether it is already running.
+
+$HADOOP_HOME/logs/
+# Check Hadoop logs for the reason.
+
+ls -l $HADOOP_HOME/logs/
+# List Hadoop log files.
+
+
+---------------------------------------------------------------
+21. CHECK HADOOP LOGS
+---------------------------------------------------------------
+
+ls -l $HADOOP_HOME/logs/
+# List Hadoop logs.
+
+tail -50 $HADOOP_HOME/logs/*.log
+# Show the last 50 lines of Hadoop log files.
+
+grep -i "error" $HADOOP_HOME/logs/*.log
+# Search logs for errors.
+
+grep -i "exception" $HADOOP_HOME/logs/*.log
+# Search logs for exceptions.
+
+
+---------------------------------------------------------------
+22. CHECK HDFS HEALTH
+---------------------------------------------------------------
+
+hdfs dfsadmin -report
+# Show DataNode/HDFS status.
+
+hdfs fsck /
+# Check HDFS filesystem health.
+
+hdfs dfsadmin -safemode get
+# Check whether NameNode is in safe mode.
+
+hdfs dfsadmin -safemode leave
+# Leave safe mode if necessary.
+
+
+---------------------------------------------------------------
+23. CHECK YARN
+---------------------------------------------------------------
+
+yarn node -list
+# Show active YARN NodeManagers.
+
+yarn application -list
+# Show running YARN applications.
+
+yarn application -list -appStates ALL
+# Show applications including completed/failed ones.
+
+yarn logs -applicationId APPLICATION_ID
+# View logs for a specific YARN application.
+# Replace APPLICATION_ID with the actual ID.
+
+
+---------------------------------------------------------------
+24. COMMON PROBLEMS
+---------------------------------------------------------------
+
+Problem: "Output directory already exists"
+
+Fix:
+hdfs dfs -rm -r /week4/output
+# Delete old output and rerun the job.
+
+
+Problem: "Connection refused" / NameNode not running
+
+Fix:
+jps
+stop-dfs.sh
+start-dfs.sh
+jps
+
+
+Problem: YARN / ResourceManager problem
+
+Fix:
+jps
+stop-yarn.sh
+start-yarn.sh
+jps
+
+
+Problem: DataNode is missing
+
+Fix:
+jps
+hdfs dfsadmin -report
+# Check whether the DataNode is registered.
+
+
+Problem: JobHistoryServer missing
+
+Fix:
+mapred --daemon start historyserver
+jps
+
+
+Problem: HDFS is in safe mode
+
+Check:
+hdfs dfsadmin -safemode get
+
+Leave safe mode:
+hdfs dfsadmin -safemode leave
+
+
+Problem: Java class not found
+
+Check:
+find classes -type f
+jar -tf weather.jar
+
+# Make sure the package name and class name match the command.
+# Example:
+# package org.myorg.demo;
+# Run with:
+# hadoop jar weather.jar org.myorg.demo.MaxTemperature ...
+
+
+---------------------------------------------------------------
+25. FINAL SHUTDOWN
+---------------------------------------------------------------
+
+mapred --daemon stop historyserver
+# Stop JobHistory Server if you started it.
+
+stop-yarn.sh
+# Stop YARN.
+
+stop-dfs.sh
+# Stop HDFS.
+
+jps
+# Confirm Hadoop daemons have stopped.
+
+
+===============================================================
+FOUR CONFIG FILES - QUICK MEMORY
+===============================================================
+
+core-site.xml
+    = HDFS address
+    fs.defaultFS = hdfs://localhost:9000
+
+hdfs-site.xml
+    = HDFS storage + replication
+    dfs.replication = 1
+    NameNode/DataNode directories
+
+mapred-site.xml
+    = MapReduce uses YARN
+    mapreduce.framework.name = yarn
+
+yarn-site.xml
+    = YARN resource management
+    ResourceManager + NodeManager + ShuffleHandler
+
+
+===============================================================
+MOST IMPORTANT COMMAND FLOW
+===============================================================
+
+START:
+start-dfs.sh
+start-yarn.sh
+jps
+
+HDFS:
+hdfs dfs -mkdir -p /input
+hdfs dfs -put file.txt /input/
+hdfs dfs -ls /input
+hdfs dfs -cat /input/file.txt
+
+COMPILE:
+javac -classpath "$(hadoop classpath)" -d classes src/org/myorg/demo/*.java
+jar -cvf program.jar -C classes .
+
+RUN:
+hadoop jar program.jar CLASS_NAME /input /output
+
+OUTPUT:
+hdfs dfs -ls /output
+hdfs dfs -cat /output/part-r-00000
+
+IF OUTPUT EXISTS:
+hdfs dfs -rm -r /output
+
+HISTORY:
+mapred --daemon start historyserver
+jps
+
+STOP:
+mapred --daemon stop historyserver
+stop-yarn.sh
+stop-dfs.sh
+jps

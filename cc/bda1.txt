@@ -1,0 +1,252 @@
+---------------------------------------------------------------------------------------------------------------------
+week 1
+
+-------------------Open Ubuntu Terminal--------------------------
+ananya@computername:~$
+lsb_release -a
+java -version
+javac -version
+hadoop version
+ssh -V
+
+sudo apt update
+
+
+--------------------Check / Install Java JDK 17--------------------------
+java -version
+javac -version
+sudo apt install openjdk-17-jdk -y
+
+java -version
+javac -version
+readlink -f $(which java)
+o/p:/usr/lib/jvm/java-17-openjdk-amd64
+
+
+-----------------------Install OpenSSH Server-----------------------------
+sudo apt install openssh-server -y
+sudo systemctl status ssh
+sudo systemctl start ssh
+check : sudo systemctl status ssh
+
+ssh -V
+ 
+
+------------------------Create the Hadoop User----------------------------
+sudo adduser hdoop
+(Enter a password when asked.
+
+For the other information, press Enter.
+
+At the end:
+
+Is the information correct? [Y/n]
+
+Type:
+
+Y)
+
+
+----------------------Switch to the Hadoop User------------------------------
+su - hdoop
+o/p: hdoop@computername:~$
+
+
+--------------------Configure Passwordless SSH-----------------------------
+ssh-keygen -t rsa -P "" -f ~/.ssh/id_rsa
+
+cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+
+chmod 0600 ~/.ssh/authorized_keys
+
+ssh localhost
+yes
+exit
+
+ssh localhost
+exit
+hdoop@computername:~$
+
+
+
+
+---------------------Download Hadoop 3.5.0------------------------
+whoami ---->    hdoop
+
+wget https://dlcdn.apache.org/hadoop/common/hadoop-3.5.0/hadoop-3.5.0.tar.gz
+tar xzf hadoop-3.5.0.tar.gz
+
+ls
+o/p: hadoop-3.5.0
+hadoop-3.5.0.tar.gz
+hadoop installation path: /home/hdoop/hadoop-3.5.0
+
+
+
+-------------------Configure Hadoop Environment Variables------------------
+nano ~/.bashrc
+
+# Hadoop Environment Variables
+
+export HADOOP_HOME=/home/hdoop/hadoop-3.5.0
+export HADOOP_INSTALL=$HADOOP_HOME
+export HADOOP_MAPRED_HOME=$HADOOP_HOME
+export HADOOP_COMMON_HOME=$HADOOP_HOME
+export HADOOP_HDFS_HOME=$HADOOP_HOME
+export YARN_HOME=$HADOOP_HOME
+export HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native
+export PATH=$PATH:$HADOOP_HOME/sbin:$HADOOP_HOME/bin
+export HADOOP_OPTS="-Djava.library.path=$HADOOP_HOME/lib/native"
+
+Ctrl + O
+Enter
+Ctrl + X
+
+source ~/.bashrc
+echo $HADOOP_HOME
+(Expected:
+
+/home/hdoop/hadoop-3.5.0
+
+Also check Hadoop:
+
+hadoop version
+
+You should see Hadoop 3.5.0.)
+
+
+
+
+------------------------Configure hadoop-env.sh--------------------------------
+nano $HADOOP_HOME/etc/hadoop/hadoop-env.sh
+
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+
+grep JAVA_HOME $HADOOP_HOME/etc/hadoop/hadoop-env.sh
+
+
+
+-----------------------Configure core-site.xml------------------------------
+nano $HADOOP_HOME/etc/hadoop/core-site.xml
+
+    <property>
+        <name>fs.defaultFS</name>
+        <value>hdfs://localhost:9000</value>
+    </property>
+
+
+
+--------------------Configure hdfs-site.xml------------------------------
+nano $HADOOP_HOME/etc/hadoop/hdfs-site.xml
+
+
+ <property>
+        <name>dfs.replication</name>
+        <value>1</value>
+    </property>
+
+
+
+
+--------------------------Configure mapred-site.xml----------------------
+nano $HADOOP_HOME/etc/hadoop/mapred-site.xml
+
+ <property>
+        <name>mapreduce.framework.name</name>
+        <value>yarn</value>
+    </property>
+
+    <property>
+        <name>yarn.app.mapreduce.am.env</name>
+        <value>HADOOP_MAPRED_HOME=/home/hdoop/hadoop-3.5.0</value>
+    </property>
+
+    <property>
+        <name>mapreduce.map.env</name>
+        <value>HADOOP_MAPRED_HOME=/home/hdoop/hadoop-3.5.0</value>
+    </property>
+
+    <property>
+        <name>mapreduce.reduce.env</name>
+        <value>HADOOP_MAPRED_HOME=/home/hdoop/hadoop-3.5.0</value>
+    </property>
+
+
+
+
+
+
+
+-----------------------------Configure yarn-site.xml------------------------------
+nano $HADOOP_HOME/etc/hadoop/yarn-site.xml
+
+ <property>
+        <name>yarn.nodemanager.aux-services</name>
+        <value>mapreduce_shuffle</value>
+    </property>
+
+    <property>
+        <name>yarn.nodemanager.aux-services.mapreduce.shuffle.class</name>
+        <value>org.apache.hadoop.mapred.ShuffleHandler</value>
+    </property>
+
+    <property>
+        <name>yarn.resourcemanager.hostname</name>
+        <value>localhost</value>
+    </property>
+
+    <property>
+        <name>yarn.nodemanager.env-whitelist</name>
+        <value>JAVA_HOME,HADOOP_COMMON_HOME,HADOOP_HDFS_HOME,HADOOP_CONF_DIR,HADOOP_COMMON_LIB_NATIVE_DIR,HADOOP_MAPRED_HOME</value>
+    </property>
+
+    <property>
+        <name>yarn.resourcemanager.webapp.address</name>
+        <value>0.0.0.0:8088</value>
+    </property>
+
+
+
+
+
+
+
+
+-------------------------Format the NameNode----------------------
+hdfs namenode -format
+
+-------------------Start HDFS------------------------
+start-dfs.sh
+
+jps
+
+o/p:
+NameNode
+DataNode
+SecondaryNameNode
+
+
+-----------------Start YARN--------------------------
+start-yarn.sh
+
+jps
+
+o/p:
+NameNode
+DataNode
+SecondaryNameNode
+ResourceManager
+NodeManager
+
+
+---------------------Open the Hadoop Browser Interfaces------------------------
+NameNode
+http://localhost:9870
+DataNode
+http://localhost:9864
+YARN ResourceManager
+http://localhost:8088
+
+If you want the direct YARN Cluster page:
+http://localhost:8088/cluster
+

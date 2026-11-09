@@ -1,0 +1,287 @@
+
+week 4
+
+start-dfs.sh
+start-yarn.sh
+jps
+
+mkdir -p ~/week4
+cd ~/week4
+pwd
+
+
+nano Temperature.txt
+
+2020 35
+2020 42
+2020 38
+2021 40
+2021 45
+2021 41
+2022 37
+2022 43
+2022 39
+Ctrl + O, press Enter, then Ctrl + X
+
+cat Temperature.txt
+
+hdfs dfs -mkdir -p /week4/input
+hdfs dfs -put Temperature.txt /week4/input/
+
+hdfs dfs -ls /week4/input
+hdfs dfs -cat /week4/input/Temperature.txt
+/week4/input/Temperature.txt/week4/input/Temperature.txt
+
+mkdir -p src/org/myorg/demo
+nano src/org/myorg/demo/MaxTemperatureMapper.java
+
+package org.myorg.demo;
+
+import java.io.IOException;
+import java.util.StringTokenizer;
+
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
+
+public class MaxTemperatureMapper
+        extends Mapper<LongWritable, Text, Text, IntWritable> {
+
+    @Override
+    public void map(LongWritable key, Text value, Context context)
+            throws IOException, InterruptedException {
+
+        StringTokenizer tokenizer =
+                new StringTokenizer(value.toString());
+
+        String year = tokenizer.nextToken();
+        int temperature = Integer.parseInt(tokenizer.nextToken());
+
+        context.write(new Text(year), new IntWritable(temperature));
+    }
+}
+
+
+
+nano src/org/myorg/demo/MaxTemperatureReducer.java
+
+package org.myorg.demo;
+
+import java.io.IOException;
+
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Reducer;
+
+public class MaxTemperatureReducer
+        extends Reducer<Text, IntWritable, Text, IntWritable> {
+
+    @Override
+    public void reduce(Text key, Iterable<IntWritable> values,
+                       Context context)
+            throws IOException, InterruptedException {
+
+        int maxTemp = Integer.MIN_VALUE;
+
+        for (IntWritable value : values) {
+            if (value.get() > maxTemp) {
+                maxTemp = value.get();
+            }
+        }
+
+        context.write(key, new IntWritable(maxTemp));
+    }
+}
+
+
+nano src/org/myorg/demo/MaxTemperature.java
+
+package org.myorg.demo;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+
+public class MaxTemperature {
+
+    public static void main(String[] args) throws Exception {
+
+        if (args.length != 2) {
+            System.err.println(
+                "Usage: MaxTemperature <input> <output>");
+            System.exit(2);
+        }
+
+        Configuration conf = new Configuration();
+        Job job = Job.getInstance(conf, "Maximum Temperature");
+
+        job.setJarByClass(MaxTemperature.class);
+        job.setMapperClass(MaxTemperatureMapper.class);
+        job.setCombinerClass(MaxTemperatureReducer.class);
+        job.setReducerClass(MaxTemperatureReducer.class);
+
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(IntWritable.class);
+
+        FileInputFormat.addInputPath(job, new Path(args[0]));
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
+        System.exit(job.waitForCompletion(true) ? 0 : 1);
+    }
+}
+
+
+ls src/org/myorg/demo
+o/p:MaxTemperature.java
+MaxTemperatureMapper.java
+MaxTemperatureReducer.java
+
+mkdir -p classes
+javac -classpath "$(hadoop classpath)" -d classes src/org/myorg/demo/*.java
+
+find classes -type f
+o/p:classes/org/myorg/demo/MaxTemperature.class
+classes/org/myorg/demo/MaxTemperatureMapper.class
+classes/org/myorg/demo/MaxTemperatureReducer.class
+
+
+jar -cvf weather.jar -C classes .
+
+ls -lh weather.jar
+jar -tf weather.jar
+
+hdfs dfs -ls /week4/output
+if not exist: hdfs dfs -rm -r /week4/output
+
+hadoop jar weather.jar org.myorg.demo.MaxTemperature /week4/input /week4/output
+success
+
+hdfs dfs -ls /week4/output
+o/p:/week4/output/_SUCCESS
+/week4/output/part-r-00000
+
+hdfs dfs -cat /week4/output/part-r-00000
+o/p:2020    42
+2021    45
+2022    43
+
+stop-yarn.sh
+stop-dfs.sh
+jps
+
+
+
+
+
+
+
+
+
+
+
+
+
+==============================================================================================================================
+
+
+week 4 alternative
+
+nano Temperature.txt
+2020 35
+2020 42
+2020 38
+2021 40
+2021 45
+2021 41
+2022 37
+2022 43
+2022 39
+cat Temperature.txt
+
+nano MaxTemperature.java
+
+import java.io.*;
+import java.util.*;
+
+public class MaxTemperature {
+
+    public static void main(String[] args) throws Exception {
+
+        String inputFile = args[0];
+        String outputFile = args[1];
+
+        HashMap<String, Integer> maxTemperature = new HashMap<>();
+
+        BufferedReader br = new BufferedReader(
+                new FileReader(inputFile));
+
+        String line;
+
+        while ((line = br.readLine()) != null) {
+
+            String[] parts = line.trim().split("\\s+");
+
+            String year = parts[0];
+            int temperature = Integer.parseInt(parts[1]);
+
+            if (!maxTemperature.containsKey(year) ||
+                temperature > maxTemperature.get(year)) {
+
+                maxTemperature.put(year, temperature);
+            }
+        }
+
+        br.close();
+
+        BufferedWriter bw = new BufferedWriter(
+                new FileWriter(outputFile));
+
+        for (Map.Entry<String, Integer> entry :
+                maxTemperature.entrySet()) {
+
+            bw.write(entry.getKey() + "\t" + entry.getValue());
+            bw.newLine();
+        }
+
+        bw.close();
+
+        System.out.println("Maximum temperature calculated successfully.");
+    }
+}
+
+
+
+javac MaxTemperature.java
+
+hdfs dfs -get -f /week4/input/Temperature.txt .
+java MaxTemperature Temperature.txt temperature_result.txt
+cat temperature_result.txt
+
+
+=====================================================================================================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

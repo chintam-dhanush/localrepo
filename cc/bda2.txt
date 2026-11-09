@@ -1,0 +1,127 @@
+
+---------------------------------------------------------------------------------------------------------------------
+week 2
+
+
+hadoop version
+o/p:Hadoop 3.5.0
+
+start-dfs.sh
+start-yarn.sh
+
+jps
+
+NameNode
+DataNode
+SecondaryNameNode
+ResourceManager
+NodeManager
+
+if not installed , install
+
+
+
+
+general:
+check if hadoop is running
+jps
+ 
+if not :
+start-dfs.sh
+start-yarn.sh
+jps
+
+cd ~
+
+pwd
+o/p:/home/hdoop
+
+nano example.txt
+
+BIG DATA ANALYTICS
+HADOOP IS USED FOR PROCESSING BIG DATA
+HDFS STORES LARGE FILES
+
+Ctrl + O
+Enter
+Ctrl + X
+
+ls
+o/p:example.txt
+
+hdfs dfs -mkdir /aiml
+hdfs dfs -ls /
+o/p: found 2 items ...
+
+hdfs dfs -put example.txt /aiml/
+
+hdfs dfs -cat /aiml/example.txt
+o/p:BIG DATA ANALYTICS
+HADOOP IS USED FOR PROCESSING BIG DATA
+HDFS STORES LARGE FILES
+
+hdfs dfs -mkdir /aiml/input
+hdfs dfs -ls /aiml
+o/p: found 2 items ...
+
+hdfs dfs -put example.txt /aiml/input/
+hdfs dfs -ls /aiml/input
+o/p: found 1 items
+
+hdfs dfs -ls -R /aiml
+You should see both:
+/aiml/example.txt
+/aiml/input/example.txt
+
+cd ~
+hdfs dfs -get /aiml/input/example.txt retrieved.txt
+
+cat retrieved.txt
+o/p:BIG DATA ANALYTICS
+HADOOP IS USED FOR PROCESSING BIG DATA
+HDFS STORES LARGE FILES
+
+hdfs dfs -rm /aiml/example.txt
+o/p: deleted 
+
+hdfs dfs -ls /aiml
+o/p: only input
+
+hdfs dfs -rm /aiml/input/example.txt
+o/p:deleted
+
+hdfs dfs -rmdir /aiml/input
+hdfs dfs -ls /aiml
+
+
+
+----------------------------------------------------------------------------------------------------------------------
+week 3
+
+hadoop version
+o/p:Hadoop 3.5.0
+
+start-dfs.sh
+start-yarn.sh
+
+jps
+
+NameNode
+DataNode
+SecondaryNameNode
+ResourceManager
+NodeManager
+
+if not installed , install
+
+
+
+
+general:
+check if hadoop is running
+jps
+ 
+if not :
+start-dfs.sh
+start-yarn.sh
+jps

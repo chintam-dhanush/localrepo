@@ -1,0 +1,95 @@
+su - hdoop
+
+jps
+start-dfs.sh
+start-yarn.sh
+
+cd ~
+
+nano WordCount.java
+nano sample.txt
+
+mkdir wc
+javac -classpath "$(hadoop classpath)" -d wc WordCount.java
+
+jar -cvf wordcount.jar -C wc/ .
+
+hdfs dfs -mkdir /wordcount_input
+hdfs dfs -put sample.txt /wordcount_input/
+
+hadoop jar wordcount.jar hadoop.WordCount /wordcount_input /wordcount_output
+
+hdfs dfs -cat /wordcount_output/part-00000
+==========================================================================
+
+-------------------------------------------------------------------------------------------------
+
+troble :
+nano $HADOOP_HOME/etc/hadoop/hdfs-site.xml
+<configuration>
+    <property>
+        <name>dfs.replication</name>
+        <value>1</value>
+    </property>
+
+    <property>
+        <name>dfs.namenode.name.dir</name>
+        <value>file:///home/hdoop/hdfs/namenode</value>
+    </property>
+
+    <property>
+        <name>dfs.datanode.data.dir</name>
+        <value>file:///home/hdoop/hdfs/datanode</value>
+    </property>
+</configuration>
+
+
+
+alternative:
+
+nano SimpleWordCount.java
+
+import java.io.*;
+import java.util.*;
+
+public class SimpleWordCount {
+
+    public static void main(String[] args) throws Exception {
+
+        String inputFile = args[0];
+        String outputFile = args[1];
+
+        HashMap<String, Integer> count = new HashMap<>();
+
+        BufferedReader br = new BufferedReader(new FileReader(inputFile));
+
+        String line;
+
+        while ((line = br.readLine()) != null) {
+
+            String[] words = line.toLowerCase().split("\\s+");
+
+            for (String word : words) {
+                count.put(word, count.getOrDefault(word, 0) + 1);
+            }
+        }
+
+        br.close();
+
+        BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile));
+
+        for (Map.Entry<String, Integer> entry : count.entrySet()) {
+            bw.write(entry.getKey() + "\t" + entry.getValue());
+            bw.newLine();
+        }
+
+        bw.close();
+
+        System.out.println("Word count completed successfully.");
+    }
+}
+
+
+javac SimpleWordCount.java
+
+java SimpleWordCount sample.txt wordcount_result.txt

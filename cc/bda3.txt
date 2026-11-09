@@ -1,0 +1,280 @@
+
+----------------------week 3----------------------
+
+ananya@Ananya:~$
+su - hdoop
+hdoop@Ananya:~$
+
+jps
+
+NameNode
+DataNode
+SecondaryNameNode
+ResourceManager
+NodeManager
+Jps
+
+start-dfs.sh
+start-yarn.sh
+jps
+
+
+if namenode trouble: 
+stop-yarn.sh
+stop-dfs.sh
+
+hdfs namenode -format
+
+start-dfs.sh
+start-yarn.sh
+jps
+
+
+cd ~
+pwd
+o/p:
+/home/hdoop
+
+
+----------------------create the java prgm----------
+nano ProcessUnits.java
+
+package hadoop;
+
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.StringTokenizer;
+
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapred.FileInputFormat;
+import org.apache.hadoop.mapred.FileOutputFormat;
+import org.apache.hadoop.mapred.JobClient;
+import org.apache.hadoop.mapred.JobConf;
+import org.apache.hadoop.mapred.MapReduceBase;
+import org.apache.hadoop.mapred.Mapper;
+import org.apache.hadoop.mapred.OutputCollector;
+import org.apache.hadoop.mapred.Reducer;
+import org.apache.hadoop.mapred.Reporter;
+import org.apache.hadoop.mapred.TextInputFormat;
+import org.apache.hadoop.mapred.TextOutputFormat;
+
+public class ProcessUnits {
+
+    public static class E_EMapper extends MapReduceBase
+            implements Mapper<LongWritable, Text, Text, IntWritable> {
+
+        public void map(LongWritable key, Text value,
+                OutputCollector<Text, IntWritable> output,
+                Reporter reporter) throws IOException {
+
+            String line = value.toString();
+
+            StringTokenizer s = new StringTokenizer(line);
+
+            String year = s.nextToken();
+            String lasttoken = null;
+
+            while (s.hasMoreTokens()) {
+                lasttoken = s.nextToken();
+            }
+
+            int units = Integer.parseInt(lasttoken);
+
+            output.collect(new Text(year), new IntWritable(units));
+        }
+    }
+
+    public static class E_EReduce extends MapReduceBase
+            implements Reducer<Text, IntWritable, Text, IntWritable> {
+
+        public void reduce(Text key, Iterator<IntWritable> values,
+                OutputCollector<Text, IntWritable> output,
+                Reporter reporter) throws IOException {
+
+            int maxavg = 30;
+
+            while (values.hasNext()) {
+
+                int val = values.next().get();
+
+                if (val > maxavg) {
+                    output.collect(key, new IntWritable(val));
+                }
+            }
+        }
+    }
+
+    public static void main(String args[]) throws Exception {
+
+        JobConf conf = new JobConf(ProcessUnits.class);
+
+        conf.setJobName("max_electricityunits");
+
+        conf.setOutputKeyClass(Text.class);
+        conf.setOutputValueClass(IntWritable.class);
+
+        conf.setMapperClass(E_EMapper.class);
+        conf.setCombinerClass(E_EReduce.class);
+        conf.setReducerClass(E_EReduce.class);
+
+        conf.setInputFormat(TextInputFormat.class);
+        conf.setOutputFormat(TextOutputFormat.class);
+
+        FileInputFormat.setInputPaths(conf, new Path(args[0]));
+        FileOutputFormat.setOutputPath(conf, new Path(args[1]));
+
+        JobClient.runJob(conf);
+    }
+}
+
+
+
+
+
+Ctrl + O
+Enter
+Ctrl + X
+
+
+
+---------------------create input filr------------------
+nano sample.txt
+
+1979 23 23 2 43 24 25 26 26 26 26 25 26 25
+1980 26 27 28 28 28 30 31 31 31 30 30 30 29
+1981 31 32 32 32 33 34 35 36 36 34 34 34 34
+1984 39 38 39 39 39 41 42 43 40 39 38 38 40
+1985 38 39 39 39 39 41 41 41 00 40 39 39 45
+
+Ctrl + O
+Enter
+Ctrl + X
+
+ls
+cat sample.txt
+
+
+
+mkdir units
+ls
+
+
+javac -classpath "$(hadoop classpath)" -d units ProcessUnits.java
+find units -type f
+o/p:
+units/hadoop/ProcessUnits.class
+units/hadoop/ProcessUnits$E_EMapper.class
+units/hadoop/ProcessUnits$E_EReduce.class
+
+
+jar -cvf units.jar -C units/ .
+ls
+o/P: units.jar
+
+hdfs dfs -ls /
+hdfs dfs -mkdir /units_input
+hdfs dfs -ls /
+
+hdfs dfs -put sample.txt /units_input/
+hdfs dfs -ls /units_input
+hdfs dfs -cat /units_input/sample.txt
+
+hadoop jar units.jar hadoop.ProcessUnits /units_input /units_output
+
+
+------------------------------------------------------------------------------
+if trouble :
+nano $HADOOP_HOME/etc/hadoop/mapred-site.xml
+
+<configuration>
+
+    <property>
+        <name>mapreduce.framework.name</name>
+        <value>yarn</value>
+    </property>
+
+    <property>
+        <name>mapreduce.application.classpath</name>
+        <value>
+            $HADOOP_MAPRED_HOME/share/hadoop/mapreduce/*,
+            $HADOOP_MAPRED_HOME/share/hadoop/mapreduce/lib/*
+        </value>
+    </property>
+
+    <property>
+        <name>yarn.app.mapreduce.am.env</name>
+        <value>HADOOP_MAPRED_HOME=/home/hdoop/hadoop-3.5.0</value>
+    </property>
+
+    <property>
+        <name>mapreduce.map.env</name>
+        <value>HADOOP_MAPRED_HOME=/home/hdoop/hadoop-3.5.0</value>
+    </property>
+
+    <property>
+        <name>mapreduce.reduce.env</name>
+        <value>HADOOP_MAPRED_HOME=/home/hdoop/hadoop-3.5.0</value>
+    </property>
+
+</configuration>
+
+
+
+
+nano $HADOOP_HOME/etc/hadoop/yarn-site.xml
+
+<configuration>
+
+    <property>
+        <name>yarn.nodemanager.aux-services</name>
+        <value>mapreduce_shuffle</value>
+    </property>
+
+    <property>
+        <name>yarn.nodemanager.aux-services.mapreduce.shuffle.class</name>
+        <value>org.apache.hadoop.mapred.ShuffleHandler</value>
+    </property>
+
+    <property>
+        <name>yarn.resourcemanager.hostname</name>
+        <value>localhost</value>
+    </property>
+
+    <property>
+        <name>yarn.nodemanager.env-whitelist</name>
+        <value>JAVA_HOME,HADOOP_COMMON_HOME,HADOOP_HDFS_HOME,HADOOP_CONF_DIR,HADOOP_COMMON_LIB_NATIVE_DIR,HADOOP_MAPRED_HOME</value>
+    </property>
+
+</configuration>
+
+
+
+stop-yarn.sh
+start-yarn.sh
+hadoop jar units.jar hadoop.ProcessUnits /units_input /units_output
+-----------------------------------------------------------------------------------
+
+
+hdfs dfs -ls /units_output
+
+o/p:
+_SUCCESS
+part-00000
+
+hdfs dfs -cat /units_output/part-00000
+o/p:
+1979    43
+1980    31
+1981    34
+1984    40
+1985    45
+==============================================================================================================================
+
+
+
+
+
+

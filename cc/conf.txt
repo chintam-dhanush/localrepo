@@ -1,0 +1,209 @@
+HADOOP 3.5.0 - COMPLETE COMMAND + CONFIGURATION CHEAT SHEET
+===============================================================
+
+Assumptions:
+- Hadoop user: hdoop
+- Hadoop home: /home/hdoop/hadoop
+- Hadoop 3.5.0
+- Java 17
+- Single-node / pseudo-distributed setup
+- Hostname: localhost
+
+IMPORTANT:
+1. Replace the paths only if your Hadoop installation uses a different home directory.
+2. Do NOT run "hdfs namenode -format" every time. Run it only for a fresh Hadoop setup.
+3. Before running a MapReduce job, the HDFS input/output paths must be correct.
+4. A MapReduce output directory must NOT already exist.
+
+
+mapred --daemon start historyserver
+---------------------------------------------------------------
+1. BASIC CHECKS
+---------------------------------------------------------------
+
+java -version
+# Check Java version.
+
+hadoop version
+# Check Hadoop version.
+
+echo $JAVA_HOME
+# Check JAVA_HOME.
+
+echo $HADOOP_HOME
+# Check HADOOP_HOME.
+
+which hadoop
+# Check which Hadoop installation is being used.
+
+jps
+# Check whether Hadoop daemons are running.
+
+
+---------------------------------------------------------------
+2. START / STOP HADOOP
+---------------------------------------------------------------
+
+start-dfs.sh
+# Start HDFS: NameNode, DataNode, SecondaryNameNode.
+
+start-yarn.sh
+# Start YARN: ResourceManager and NodeManager.
+
+jps
+# Confirm daemons are running.
+
+stop-yarn.sh
+# Stop YARN.
+
+stop-dfs.sh
+# Stop HDFS.
+
+stop-all.sh
+# Stop all Hadoop daemons. Use when you want to shut Hadoop down completely.
+
+
+---------------------------------------------------------------
+3. IF HADOOP IS NOT STARTING
+---------------------------------------------------------------
+
+jps
+# First check which daemons are actually running.
+
+stop-all.sh
+# Stop any partially running Hadoop services.
+
+start-dfs.sh
+start-yarn.sh
+jps
+# Start again and check.
+
+
+---------------------------------------------------------------
+4. FRESH HADOOP SETUP ONLY
+---------------------------------------------------------------
+
+mkdir -p ~/hadoopdata/hdfs/namenode
+mkdir -p ~/hadoopdata/hdfs/datanode
+# Create NameNode and DataNode storage directories.
+
+hdfs namenode -format
+# FORMAT THE NAMENODE ONLY ON A FRESH SETUP.
+# WARNING: Formatting deletes the existing HDFS namespace.
+
+
+---------------------------------------------------------------
+5. CORE HADOOP CONFIGURATION
+---------------------------------------------------------------
+
+Configuration file:
+$HADOOP_HOME/etc/hadoop/core-site.xml
+
+Use:
+
+<configuration>
+    <property>
+        <name>fs.defaultFS</name>
+        <value>hdfs://localhost:9000</value>
+    </property>
+</configuration>
+
+
+---------------------------------------------------------------
+6. HDFS CONFIGURATION
+---------------------------------------------------------------
+
+Configuration file:
+$HADOOP_HOME/etc/hadoop/hdfs-site.xml
+
+Use:
+
+<configuration>
+    <property>
+        <name>dfs.replication</name>
+        <value>1</value>
+    </property>
+
+    <property>
+        <name>dfs.namenode.name.dir</name>
+        <value>file:///home/hdoop/hadoopdata/hdfs/namenode</value>
+    </property>
+
+    <property>
+        <name>dfs.datanode.data.dir</name>
+        <value>file:///home/hdoop/hadoopdata/hdfs/datanode</value>
+    </property>
+</configuration>
+
+
+---------------------------------------------------------------
+7. MAPREDUCE CONFIGURATION
+---------------------------------------------------------------
+
+Configuration file:
+$HADOOP_HOME/etc/hadoop/mapred-site.xml
+
+Use:
+
+<configuration>
+    <property>
+        <name>mapreduce.framework.name</name>
+        <value>yarn</value>
+    </property>
+
+    <property>
+        <name>mapreduce.application.classpath</name>
+        <value>$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/*:$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/lib/*</value>
+    </property>
+</configuration>
+
+
+---------------------------------------------------------------
+8. YARN CONFIGURATION
+---------------------------------------------------------------
+
+Configuration file:
+$HADOOP_HOME/etc/hadoop/yarn-site.xml
+
+Use:
+
+<configuration>
+    <property>
+        <name>yarn.resourcemanager.hostname</name>
+        <value>localhost</value>
+    </property>
+
+    <property>
+        <name>yarn.nodemanager.aux-services</name>
+        <value>mapreduce_shuffle</value>
+    </property>
+
+    <property>
+        <name>yarn.nodemanager.aux-services.mapreduce_shuffle.class</name>
+        <value>org.apache.hadoop.mapred.ShuffleHandler</value>
+    </property>
+</configuration>
+
+
+---------------------------------------------------------------
+9. IMPORTANT HADOOP ENVIRONMENT FILE
+---------------------------------------------------------------
+
+Configuration file:
+$HADOOP_HOME/etc/hadoop/hadoop-env.sh
+
+Make sure JAVA_HOME is set correctly:
+
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+
+If your Java is installed somewhere else, find it with:
+
+readlink -f $(which java)
+# Shows the Java executable path.
+
+dirname $(dirname $(readlink -f $(which java)))
+# Shows the JAVA_HOME path.
+
+
+
+mapred --daemon start historyserver

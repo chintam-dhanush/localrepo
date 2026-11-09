@@ -1,0 +1,98 @@
+
+-----------------------------------------------------------------------------------------------------------------------
+
+week 5
+
+
+start-dfs.sh
+start-yarn.sh
+jps
+
+mkdir -p ~/week5
+cd ~/week5
+pwd
+
+nano student
+
+John,18,4.0
+Mary,19,3.7
+Bill,20,3.9
+Joe,22,3.8
+Jill,20,4.0
+
+Ctrl + O, press Enter, then Ctrl + X
+
+cat student
+
+hdfs dfs -put student /
+hdfs dfs -cat /student
+
+cd ~
+wget https://archive.apache.org/dist/pig/pig-0.17.0/pig-0.17.0.tar.gz
+tar -xzf pig-0.17.0.tar.gz
+
+echo 'export PIG_HOME=$HOME/pig-0.17.0' >> ~/.bashrc
+echo 'export PATH=$PATH:$PIG_HOME/bin' >> ~/.bashrc
+echo 'export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64' >> ~/.bashrc
+source ~/.bashrc
+
+pig -version
+
+pig
+
+grunt> A = LOAD '/student' USING PigStorage(',') AS (name:chararray, age:int, gpa:float);
+grunt> DUMP A;
+
+o/p:
+(John,18,4.0)
+(Mary,19,3.7)
+(Bill,20,3.9)
+(Joe,22,3.8)
+(Jill,20,4.0)
+
+grunt> B = FILTER A BY name MATCHES 'J.*';
+grunt> DUMP B;
+
+o/p:
+(John,18,4.0)
+(Joe,22,3.8)
+(Jill,20,4.0)
+
+grunt> B = FOREACH A GENERATE name;
+grunt> DUMP B;
+
+o/p:
+(John)
+(Mary)
+(Bill)
+(Joe)
+(Jill)
+
+grunt> B = ORDER A BY age;
+grunt> DUMP B;
+
+o/p:
+(John,18,4.0)
+(Mary,19,3.7)
+(Jill,20,4.0)
+(Bill,20,3.9)
+(Joe,22,3.8)
+
+grunt> B = GROUP A BY age;
+grunt> DUMP B;
+
+grunt> C = LOAD '/student' USING PigStorage(',') AS (name:chararray, age:int, gpa:float);
+grunt> B = JOIN A BY name, C BY name;
+grunt> DUMP B;
+
+grunt> quit
+
+stop-yarn.sh
+stop-dfs.sh
+jps
+
+mapred --daemon stop historyserver
+jps
+
+
+mapred --daemon start historyserver
