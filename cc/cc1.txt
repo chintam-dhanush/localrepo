@@ -1,0 +1,585 @@
+Week 1: Create a Virtual Machine Using Oracle VirtualBox
+Aim
+To create, configure and run a virtual machine using Oracle VirtualBox by allocating system resources
+and installing a guest operating system.
+Procedure
+Step 1: Download and install Oracle VirtualBox.
+Visit the official Oracle VirtualBox website: https://www.virtualbox.org/wiki/Downloads. Download
+the installer suitable for your host operating system (Windows, Linux or macOS). Run the installer
+and follow the on-screen instructions to complete the installation.
+Step 2: Download the Guest Operating System ISO file.
+Download the ISO image of the operating system you want to install inside the virtual machine, such
+as Ubuntu or Windows. This ISO file will be used as the installation media.
+Step 3: Open VirtualBox Manager.
+Launch Oracle VirtualBox after installation. The VirtualBox Manager window appears, where you can
+create, configure and manage virtual machines.
+Step 4: Create a new virtual machine.
+Click the New button in VirtualBox Manager to begin creating a virtual machine. A configuration
+window will appear.
+Step 5: Enter the virtual machine details.
+Enter a suitable name for the VM, such as Ubuntu_VM. Select the folder to store the VM files and
+choose the operating system type and version according to the downloaded ISO.
+Step 6: Select the ISO image.
+Browse and select the downloaded guest operating system ISO file as the installation media. This
+allows the virtual machine to boot from the selected operating system installer.
+Step 7: Allocate RAM and processors.
+Specify the required amount of RAM and number of virtual CPU cores based on the guest operating
+system requirements. Ensure sufficient resources remain available for the host computer.
+Step 8: Create a virtual hard disk.
+Select Create a Virtual Hard Disk Now and specify the required storage capacity for installing the
+guest operating system and storing files.
+Step 9: Select the virtual disk format.
+Choose the required virtual hard disk format:
+ VDI: VirtualBox Disk Image (native VirtualBox format).
+ VHD: Virtual Hard Disk format.
+ VMDK: Virtual Machine Disk format.
+Select VDI when using Oracle VirtualBox.
+Step 10: Choose the storage allocation type.
+Select one of the following options:
+ Dynamically Allocated: Disk space increases as data is added.
+ Fixed Size: The entire specified disk space is allocated immediately.
+Choose the preferred option and complete the virtual disk creation.
+Step 11: Complete VM creation and configure settings.
+Click Finish to create the virtual machine. Select the VM and open Settings to verify the allocated
+memory, processors, storage and network configuration. Select NAT under Network for basic internet
+connectivity.
+Step 12: Start the virtual machine.
+Select the newly created VM and click Start. The virtual machine boots using the attached ISO image,
+and the guest operating system installation screen appears.
+Step 13: Install the guest operating system.
+Follow the on-screen installation instructions. Select the language, keyboard layout, installation type
+and other required preferences. Configure the virtual disk, create a user account and complete the
+installation.
+Step 14: Restart and verify the virtual machine.
+After installation, restart the VM and remove or detach the ISO image if necessary. Verify that the
+guest operating system boots successfully and that you can log in.
+Step 15: Use and shut down the virtual machine.
+The guest OS can now be used like a normal computer. After completing the work, close the VM and
+select an appropriate option:
+ Save State: Saves the current state to continue later.
+ Shutdown: Properly shuts down the guest OS.
+ Power Off: Immediately stops the VM.
+Step 16: Import or export the virtual machine (Optional).
+Virtual machines can also be imported or exported using OVF (Open Virtualization Format) and OVA
+(Open Virtualization Appliance) formats through the File → Import Appliance or File → Export
+Appliance options.
+Output
+A virtual machine running the selected guest operating system successfully in Oracle VirtualBox.
+Result
+A virtual machine was successfully created, configured and executed using Oracle VirtualBox, and the
+guest operating system was installed and verified.
+WEEK 2 — Use Amazon EC2 to Create a Virtual Machine
+Aim
+To create a virtual machine using Amazon Elastic Compute Cloud (EC2), connect to it using Remote
+Desktop Protocol (RDP), and terminate the instance.
+Procedure
+Step 1: Open Amazon EC2 Dashboard
+1. Log in to the AWS academic environment using the credentials provided by the college.
+2. Start the academic lab and open the AWS Management Console.
+3. Search for EC2 under the Compute services.
+4. Click EC2 to open the Amazon EC2 Dashboard.
+Step 2: Launch an EC2 Instance
+1. Click the Launch Instance button.
+2. Enter a suitable name for the virtual machine, if the name field is provided.
+3. Select an AMI (Amazon Machine Image).
+4. Choose Microsoft Windows Server 2012 R2 Base as the operating system.
+5. Select the instance type as t2.micro.
+6. Click Review and Launch.
+Step 3: Review Instance Configuration
+Review the following configuration details before launching:
+1. AMI Details: Operating system selected for the virtual machine.
+2. Instance Type: CPU and memory resources allocated to the instance.
+3. Security Groups: Firewall rules that control incoming and outgoing network traffic.
+4. Instance Details: General configuration of the instance.
+5. Storage: Disk space allocated to the virtual machine.
+6. Tags: Labels used to identify and manage AWS resources.
+After checking all the details, proceed with launching the instance.
+Step 4: Create a Key Pair
+1. Select Create a New Key Pair.
+2. Enter the key pair name as MyFirstKey.
+3. Click Download Key Pair.
+4. A file named MyFirstKey.pem is downloaded.
+5. Save the file in a safe location because it is required to retrieve the Windows Administrator
+password.
+6. Click Launch Instance to start the Windows Server instance.
+Step 5: View the Instance
+1. After launching, click View Instances.
+2. Select the newly created Windows Server instance.
+3. Initially, the instance status may show Pending.
+4. Wait until the instance state changes to Running.
+Step 6: Connect to the Instance
+1. Select the running Windows Server instance.
+2. Click the Connect button.
+3. Select the RDP Client option.
+4. The username is displayed as Administrator.
+5. Click Get Password to retrieve the login password.
+Step 7: Decrypt the Administrator Password
+1. Click Choose File.
+2. Browse and select the downloaded MyFirstKey.pem file.
+3. Click Decrypt Password.
+4. AWS displays the decrypted Administrator password.
+5. Note the username and password securely.
+Step 8: Connect Using Remote Desktop Protocol
+1. Click Download Remote Desktop File.
+2. Open the downloaded RDP file.
+3. Enter the username as Administrator.
+4. Enter the decrypted password.
+5. If a security certificate warning appears, accept it if the connection details are as expected.
+6. The Windows Server desktop opens through the RDP connection.
+Step 9: Terminate the EC2 Instance
+1. Return to the Amazon EC2 Console.
+2. Select the instance created earlier.
+3. Click Actions → Instance State → Terminate.
+4. A confirmation message appears.
+5. Select Yes, Terminate.
+6. Wait until the instance state changes to Terminated.
+Terminating unused instances helps avoid unnecessary AWS charges.
+Result
+A Windows Server virtual machine was successfully created using Amazon EC2, accessed through
+Remote Desktop Protocol (RDP), and terminated.
+Week 3: Use Amazon S3 to Create a Bucket and Upload Objects
+Aim
+To develop a Java program using Amazon S3 to create buckets, upload files as objects and perform
+basic bucket operations.
+Procedure
+Step 1: Open Amazon S3.
+Visit the AWS Management Console, sign in using your credentials, search for S3, and open the
+Amazon S3 service.
+Step 2: Create an S3 bucket.
+Click Create bucket, enter a globally unique bucket name, select the AWS Region and click Create
+bucket.
+Step 3: Set up the Java project.
+Open Eclipse or IntelliJ IDEA, create a Java project and add the AWS SDK for Java 1.x dependency to
+enable communication with Amazon S3.
+Step 4: Configure credentials and create an S3 client.
+Obtain the AWS Access Key ID and Secret Access Key for an IAM user with the required S3
+permissions. Import the required AWS SDK packages and create an AWSCredentials object using
+BasicAWSCredentials. Initialize the AmazonS3Client using these credentials.
+Step 5: Create and list buckets.
+Specify a globally unique bucket name and use createBucket() to create it. Use listBuckets() to
+retrieve all available buckets and getName() to display their names.
+Step 6: Create a folder inside the bucket.
+Specify a folder name, such as testfolder, and create an empty object with the folder name followed
+by /. This represents a folder in Amazon S3.
+Step 7: Upload a file to the bucket.
+Specify the local file path and create a Java File object. Use putObject() with the bucket name, object
+key and file to upload the selected file.
+Step 8: Retrieve and list uploaded objects.
+Use getObject() to retrieve an uploaded file. Use listObjects() to display the objects stored in the
+bucket and getKey() to obtain their names.
+Step 9: Delete objects and bucket (Optional).
+Use deleteObject() to remove uploaded files. After deleting all objects and folders, use
+deleteBucket() to delete the empty bucket.
+Java Program
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.util.List;
+import com.amazonaws.auth.*;
+import com.amazonaws.services.s3.*;
+import com.amazonaws.services.s3.model.*;
+public class AmazonS3Example {
+ private static final String SUFFIX = "/";
+ public static void main(String[] args) {
+ // Configure AWS credentials
+ AWSCredentials credentials = new BasicAWSCredentials(
+ "YourAccessKeyID",
+ "YourSecretAccessKey");
+ // Create S3 client
+ AmazonS3 s3client = new AmazonS3Client(credentials);
+ System.out.println("S3 client connected successfully!");
+ // Create bucket
+ String bucketName = "javatutorial-net-example-bucket";
+ s3client.createBucket(bucketName);
+ System.out.println("Bucket created: " + bucketName);
+ // List buckets
+ System.out.println("Available buckets:");
+ for (Bucket bucket : s3client.listBuckets()) {
+ System.out.println(" - " + bucket.getName());
+ }
+ // Create folder
+ String folderName = "testfolder";
+ createFolder(bucketName, folderName, s3client);
+ System.out.println("Folder created: " + folderName);
+ // Upload file to folder and set it to public
+ String fileName = folderName + SUFFIX + "testvideo.mp4";
+ s3client.putObject(
+ new PutObjectRequest(
+ bucketName,
+ fileName,
+ new File("C:\\Users\\user\\Desktop\\testvideo.mp4"))
+ .withCannedAcl(CannedAccessControlList.PublicRead));
+ System.out.println("File uploaded successfully: " + fileName);
+ // Delete folder and its contents
+ deleteFolder(bucketName, folderName, s3client);
+ System.out.println("Folder and its contents deleted.");
+ // Delete bucket
+ s3client.deleteBucket(bucketName);
+ System.out.println("Bucket deleted successfully!");
+ }
+ // Method to create folder
+ public static void createFolder(
+ String bucketName, String folderName, AmazonS3 client) {
+ ObjectMetadata metadata = new ObjectMetadata();
+ metadata.setContentLength(0);
+ InputStream emptyContent =
+ new ByteArrayInputStream(new byte[0]);
+ PutObjectRequest putObjectRequest = new PutObjectRequest(
+ bucketName,
+ folderName + SUFFIX,
+ emptyContent,
+ metadata);
+ client.putObject(putObjectRequest);
+ }
+ // Method to delete folder and its contents
+ public static void deleteFolder(
+ String bucketName, String folderName, AmazonS3 client) {
+ List fileList = client.listObjects(
+ bucketName, folderName).getObjectSummaries();
+ for (S3ObjectSummary file : fileList) {
+ client.deleteObject(bucketName, file.getKey());
+ }
+ client.deleteObject(bucketName, folderName);
+ }
+}
+Output
+S3 client connected successfully!
+Bucket created: javatutorial-net-example-bucket
+Available buckets:
+- javatutorial-net-example-bucket
+Folder created: testfolder
+File uploaded successfully: testfolder/testvideo.mp4
+Folder and its contents deleted.
+Bucket deleted successfully!
+Result
+An Amazon S3 bucket was successfully created using Java AWS SDK. A folder was created, and the
+selected file was uploaded and listed as an S3 object.
+WEEK 4(A) — Simple Notification Service (SNS)
+Question
+Install and configure the Simple Notification Service (SNS) client on Ubuntu and create an SNS topic
+to send email notifications.
+Aim
+To install and configure Amazon Simple Notification Service (SNS), create a topic, subscribe an email
+address, and send a test notification.
+Software Requirements
+- Ubuntu operating system
+- Java
+- AWS account
+- AWS SNS service
+Procedure
+Step 1: Install Java
+Open the Ubuntu terminal and install Java.
+sudo apt update
+sudo apt install openjdk-17-jdk
+java -version
+Step 2: Download and Extract the SNS Client
+Download the SNS client archive specified in the laboratory manual and extract it into the home
+directory.
+Step 3: Configure Environment Variables
+Open the .bashrc file:
+nano ~/.bashrc
+Add the required environment variables according to the installed client location. For example:
+export AWS_SNS_HOME=$HOME/SimpleNotificationService-CLI-1.0.2.3/
+export PATH=$PATH:$AWS_SNS_HOME/bin
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+Save the file and apply the changes:
+source ~/.bashrc
+Step 4: Open AWS Management Console
+1. Sign in to the AWS Management Console.
+2. Search for Amazon Simple Notification Service (SNS).
+3. Open the SNS service.
+4. Select Topics and click Create topic.
+5. Enter a topic name, such as my-topic.
+6. Create the topic and copy its Topic ARN.
+Step 5: Subscribe an Email Address
+1. Open the created topic.
+2. Select Create subscription.
+3. Choose Email as the protocol.
+4. Enter a valid email address.
+5. Create the subscription.
+6. Open the confirmation email and confirm the subscription.
+Step 6: Publish a Notification
+The following AWS CLI commands demonstrate how to send a test notification.
+Create a topic if it does not already exist:
+aws sns create-topic --name my-topic
+Subscribe an email address:
+aws sns subscribe \
+--topic-arn YOUR_TOPIC_ARN \
+--protocol email \
+--notification-endpoint your-email@example.com
+Publish a message:
+aws sns publish \
+--topic-arn YOUR_TOPIC_ARN \
+--message "Hello! This is a test notification." \
+--subject "SNS Test"
+Replace the example email address and Topic ARN with your own values. AWS CLI credentials and
+permissions must be configured before running these commands.
+Result
+Amazon SNS was configured, a topic was created, an email subscription was confirmed, and a test
+notification was published successfully.
+Week4b:
+Experiment: Create an Amazon CloudFront Distribution and Configure a Domain Using Amazon
+Route 53
+Aim
+To create an Amazon CloudFront distribution for delivering static web content and configure a
+custom domain name using Amazon Route 53.
+Software Requirements
+1. AWS account
+2. Internet connection and web browser
+3. Amazon S3, Amazon CloudFront, Amazon Route 53 and AWS Certificate Manager services
+Procedure
+1. Create an S3 Bucket
+1. Log in to the AWS Management Console.
+2. Search for and open Amazon S3.
+3. Click Create bucket and enter a globally unique bucket name.
+4. Select an AWS Region and create the bucket.
+5. Open the bucket and upload static website files such as HTML, CSS, JavaScript and images.
+6. Keep the bucket private and configure secure access through CloudFront.
+2. Create a CloudFront Distribution
+1. Open Amazon CloudFront in the AWS Management Console.
+2. Click Create distribution.
+3. Select the S3 bucket as the origin.
+4. Configure Origin Access Control (OAC) to allow CloudFront to access the bucket securely.
+5. Configure the cache behavior and redirect HTTP requests to HTTPS.
+6. Set the default root object as "index.html".
+7. Click Create distribution and wait until the distribution is deployed.
+8. Copy the CloudFront distribution domain name provided by AWS.
+3. Configure an SSL/TLS Certificate
+1. Open AWS Certificate Manager (ACM).
+2. Request a public SSL/TLS certificate for the custom domain, such as "example.com".
+3. Select DNS validation and verify domain ownership using the required DNS record.
+4. Ensure that the certificate is requested in the US East (N. Virginia) Region ("us-east-1"), as required
+by CloudFront.
+5. After the certificate is issued, it can be attached to the CloudFront distribution.
+4. Configure Amazon Route 53
+1. Open Amazon Route 53 in the AWS Management Console.
+2. Register a domain name such as "example.com", or use an existing registered domain.
+3. Open Hosted zones and select the domain.
+4. Click Create record to add a DNS record.
+5. Select an A record and enable the Alias option.
+6. Select the CloudFront distribution as the Alias target.
+7. Save the record. Route 53 will direct requests for the domain to the CloudFront distribution.
+5. Connect the Domain to CloudFront
+1. Return to the CloudFront console and open the distribution settings.
+2. Add the custom domain under Alternate domain names (CNAMEs).
+3. Select the SSL/TLS certificate issued through ACM.
+4. Save the configuration and wait for the distribution to be deployed.
+5. If required, create another DNS record for the "www" subdomain.
+6. Open "https://example.com" in a browser and verify that the website is accessible through the
+custom domain.
+Result
+An Amazon CloudFront distribution was configured to deliver static website content, and Amazon
+Route 53 was used to map the custom domain to the distribution.
+Conclusion
+Amazon CloudFront delivers content through its global network of edge locations. Amazon Route 53
+manages DNS records and connects the custom domain to CloudFront, while AWS Certificate
+Manager enables secure HTTPS communication.
+WEEK 5 — Cloud Security Management Using Amazon VPC
+Study and implement cloud security management using Amazon Virtual Private Cloud (VPC).
+Aim
+To create and configure a Virtual Private Cloud (VPC) in AWS with a subnet, Internet Gateway, route
+table, security group, and EC2 instance.
+Software Requirements
+- AWS account
+- Internet connection
+- Web browser
+- Amazon VPC and Amazon EC2 services
+Procedure
+Step 1: Open AWS Management Console
+1. Log in to the AWS Management Console.
+2. Search for VPC and open the Amazon VPC service.
+Step 2: Create a VPC
+1. Select Your VPCs.
+2. Click Create VPC.
+3. Enter the name as MyVPC.
+4. Enter the IPv4 CIDR block as 10.0.0.0/16.
+5. Click Create VPC.
+Step 3: Create a Subnet
+1. Select Subnets.
+2. Click Create subnet.
+3. Select MyVPC.
+4. Enter the subnet name as MySubnet.
+5. Enter the IPv4 CIDR block as 10.0.1.0/24.
+6. Click Create subnet.
+Step 4: Create an Internet Gateway
+1. Select Internet Gateways.
+2. Click Create internet gateway.
+3. Enter the name as MyIGW.
+4. Click Create internet gateway.
+5. Select the created gateway and choose Attach to a VPC.
+6. Select MyVPC and attach it.
+Step 5: Create a Route Table
+1. Select Route Tables.
+2. Click Create route table.
+3. Enter the name as MyRouteTable.
+4. Select MyVPC.
+5. Click Create route table.
+6. Open the route table and select Routes → Edit routes.
+7. Add the following route:
+
+ Destination: 0.0.0.0/0
+ Target: MyIGW
+8. Save the changes.
+9. Open Subnet associations and associate MySubnet with the route table.
+Step 6: Create a Security Group
+1. Open the Security Groups section.
+2. Click Create security group.
+3. Enter the name as MySecurityGroup.
+4. Select MyVPC.
+5. Add only the required inbound rules, such as HTTP on port 80.
+6. Allow SSH on port 22 only when required, preferably restricted to your own IP address.
+7. Create the security group.
+Step 7: Launch an EC2 Instance
+1. Open Amazon EC2.
+2. Click Launch instance.
+3. Enter the instance name as MyInstance.
+4. Select an operating system image.
+5. Choose an instance type.
+6. Select MyVPC and MySubnet in the network settings.
+7. Attach MySecurityGroup.
+8. Launch the instance.
+Step 8: Verify the Configuration
+1. Open the VPC dashboard.
+2. Verify that the VPC, subnet, Internet Gateway, and route table are created.
+3. Check the security group rules.
+4. Verify that the EC2 instance is running.
+Result
+A Virtual Private Cloud was created successfully in AWS. The subnet, Internet Gateway, route table,
+security group, and EC2 instance were configured to provide controlled network access.
+Conclusion
+Amazon VPC provides an isolated virtual network in AWS. Subnets organize resources, Internet
+Gateways provide internet connectivity, route tables control traffic paths, and security groups control
+permitted network traffic.
+WEEK 6 — Build a Hello World Application Using AWS Lambda
+Build and execute a Hello World application for the cloud using AWS Lambda.
+Aim
+To create and execute a simple serverless application using AWS Lambda.
+Software Requirements
+- AWS account
+- Internet connection
+- Web browser
+- AWS Lambda service
+Procedure
+Step 1: Open AWS Management Console
+1. Log in to the AWS Management Console.
+2. Search for AWS Lambda and open the service.
+Step 2: Create a Lambda Function
+1. Click Create function.
+2. Select Author from scratch.
+3. Enter the function name as HelloWorld.
+4. Select Python as the runtime.
+5. Select or create an appropriate execution role.
+6. Click Create function.
+Step 3: Write the Python Program
+In the Code source section, enter the following program:
+def lambda_handler(event, context):
+ return {
+ 'statusCode': 200,
+ 'body': 'Hello World!'
+ }
+Step 4: Deploy the Program
+1. Click Deploy to save the code.
+2. Wait for the deployment to complete.
+Step 5: Test the Lambda Function
+1. Click Test.
+2. Create a new test event and enter an event name, such as TestEvent.
+3. Use an empty JSON object as the event input:
+{}
+4. Save the test event.
+5. Click Test again to execute the function.
+Step 6: Verify the Output
+Check the execution result displayed by AWS Lambda.
+Expected response:
+{
+ "statusCode": 200,
+ "body": "Hello World!"
+}
+The function returns the message Hello World! with HTTP status code 200.
+Result
+The Hello World application was successfully created, deployed, and executed using AWS Lambda.
+Conclusion
+AWS Lambda is a serverless computing service that executes code without requiring the user to
+manage servers. The Lambda function was tested successfully and returned the expected Hello
+World message.
+WEEK 7 — Installing and Configuring Python, Java and PHP Using Google App Engine
+Question
+Install and configure Python, Java and PHP platforms using Google App Engine.
+Aim
+To develop, configure, test and deploy applications using Python, Java and PHP on Google App
+Engine.
+Software Requirements
+- Google account
+- Google Cloud project
+- Google Cloud CLI
+- Python, Java and PHP runtimes
+- Internet connection and web browser
+Procedure
+1. Configure Google Cloud
+2. Sign in to the Google Cloud Console.
+3. Create a new project.
+4. Install Google Cloud CLI.
+5. Open the terminal and verify the installation.
+gcloud --version
+5. Log in to Google Cloud.
+gcloud auth login
+6. Set the project ID.
+gcloud config set project YOUR_PROJECT_ID
+7. Create an App Engine application in the selected project and choose the required region.
+2. Install and Configure Python
+Step 1: Check the Python installation.
+python --version
+Step 2: Create a project directory.
+mkdir python-app
+cd python-app
+Step 3: Create main.py.
+from flask import Flask
+app = Flask(__name__)
+@app.route("/")
+def home():
+ return "Hello from Python on Google App Engine!"
+if __name__ == "__main__":
+ app.run(host="0.0.0.0", port=8080)
+Step 4: Create requirements.txt.
+Flask
+gunicorn
+Step 5: Create app.yaml.
+runtime: python313
+Step 6: Install the dependencies and run the application.
+pip install -r requirements.txt
+python main.py
+Open http://localhost:8080 in a browser.
+Step 7: Deploy the application.
+gcloud app deploy
+gcloud app browse
+3. Install and Configure Java
+Step 1: Verify Java and Maven.
+java -version
+javac -version
+mvn -version
+Step 2: Create a Java project using Maven.
+Step 3: Create the Java program in Main.java.
+package com.example;
+public class Main {
+ public static void main(String[] args) {
+ System.out.println(
+ "Hello from Java on Google App Engine!"
+ );
+ }
+}
+Step 4: Build the project.
+mvn package
+Step 5: Configure the Java web application using the appropriate Maven dependencies and App
+Engine deployment configuration.
+Step 6: Deploy the configured application.
+gcloud app deploy
+gcloud app browse
+4. Install and Configure PHP
+Step 1: Verify PHP.
+php -v
+Step 2: Create a project directory.
+mkdir php-app
+cd php-app
+Step 3: Create index.php.
+<?php
+echo "Hello from PHP on Google App Engine!";
+?>
